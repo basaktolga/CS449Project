@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Owned Courses{% endblock %}
+
+{% block content %}
+<div class="p-6">
+    <!-- Page Title -->
+    <h1 class="text-2xl font-semibold mb-4">My Owned Courses</h1>
+
+    <!-- Filter & Sort Dropdowns -->
+    <div class="flex space-x-4 mb-6">
+        <!-- Search Bar -->
+        <form class="flex items-center w-full md:w-1/2">
+            <label for="simple-search" class="sr-only">Search</label>
+            <div class="relative w-full">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+                <input type="text" id="simple-search" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Search" required>
+            </div>
+        </form>
+        <!-- Filter by Difficulty Dropdown -->
+        <button id="dropdownDifficultyButton" data-dropdown-toggle="dropdownDifficulty" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+            Filter by Difficulty
+            <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+            </svg>
+        </button>
+
+        <!-- Dropdown for Difficulty -->
+        <div id="dropdownDifficulty" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-60 dark:bg-gray-700 dark:divide-gray-600">
+            <ul class="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDifficultyButton">
+                <li>
+                    <div class="flex p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
+                        <input id="filter_all" name="difficulty" type="radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" data-difficulty="all">
+                        <label for="filter_all" class="ms-2 font-medium text-gray-900 dark:text-gray-300">All</label>
+                    </div>
+                </li>
+                <li>
+                    <div class="flex p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
+                        <input id="filter_easy" name="difficulty" type="radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" data-difficulty="easy">
+                        <label for="filter_easy" class="ms-2 font-medium text-gray-900 dark:text-gray-300">Easy</label>
+                    </div>
+                </li>
+                <li>
+                    <div class="flex p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
+                        <input id="filter_medium" name="difficulty" type="radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" data-difficulty="medium">
+                        <label for="filter_medium" class="ms-2 font-medium text-gray-900 dark:text-gray-300">Medium</label>
+                    </div>
+                </li>
+                <li>
+                    <div class="flex p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
+                        <input id="filter_hard" name="difficulty" type="radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" data-difficulty="hard">
+                        <label for="filter_hard" class="ms-2 font-medium text-gray-900 dark:text-gray-300">Hard</label>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Sort by Date Dropdown -->
+        <button id="dropdownSortButton" data-dropdown-toggle="dropdownSort" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+            Sort by Date
+            <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+            </svg>
+        </button>
+
+        <!-- Dropdown for Sort -->
+        <div id="dropdownSort" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-60 dark:bg-gray-700 dark:divide-gray-600">
+            <ul class="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownSortButton">
+                <li>
+                    <div class="flex p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
+                        <input id="course_old_to_recent" name="sorting" type="radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" data-ordering="old_to_recent">
+                        <label for="course_old_to_recent" class="ms-2 font-medium text-gray-900 dark:text-gray-300">Old to Recent</label>
+                    </div>
+                </li>
+                <li>
+                    <div class="flex p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
+                        <input id="course_recent_to_old" name="sorting" type="radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" data-ordering="recent_to_old">
+                        <label for="course_recent_to_old" class="ms-2 font-medium text-gray-900 dark:text-gray-300">Recent to Old</label>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <!-- Tag selection for filtering -->
+    <button id="dropdownTagButton" data-dropdown-toggle="dropdownTag" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+        Filter by Tags
+        <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+        </svg>
+    </button>
+    
+    <!-- Dropdown menu for tag filtering -->
+    <div id="dropdownTag" class="z-10 hidden bg-white rounded-lg shadow w-60 dark:bg-gray-700">
+        <div class="p-3">
+            <label for="tag-search" class="sr-only">Search Tags</label>
+            <div class="relative">
+                <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                    </svg>
+                </div>
+                <input type="text" id="tag-search" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search tags">
+            </div>
+        </div>
+    
+        <ul class="h-48 px-3 pb-3 overflow-y-auto text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownTagButton">
+            {% for tag in all_tags %}
+            <li>
+                <div class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
+                    <input id="checkbox-tag-{{ tag.id }}" type="checkbox" value="{{ tag.id }}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                    <label for="checkbox-tag-{{ tag.id }}" class="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">{{ tag.name }}</label>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    </div>
+
+    
+
+    <!-- Courses Display Section -->
+    <section class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+        <div id="course-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for course in owned_courses %}
+            <a href="{% url 'education:enrolled_course' course.slug %}" class="flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
+                {% if course.image %}
+                    <img class="object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg" src="{{ course.image.url }}" alt="{{ course.name }}">
+                {% else %}
+                    <img class="object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg" src="{% static 'images/default_course_image.jpg' %}" alt="Default image">
+                {% endif %}
+                <div class="flex flex-col justify-between p-4 leading-normal">
+                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ course.name }}</h5>
+                    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                        Difficulty: {{ course.difficulty }}<br>
+                        Type: {{ course.type }}<br>
+                        Lessons: {{ course.total_contents }}
+                    </p>
+                </div>
+            </a>
+            {% empty %}
+            <div class="col-md-12">
+                <p class="text-gray-700 dark:text-gray-400">No courses found.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!--  filtering script -->
+<script>
+    function filterCourses() {
+        // Get the search query from the search bar
+        var query = $('#simple-search').val().toLowerCase().trim();  // Now active
+
+        // Manually retrieve the selected sorting option
+        var ordering = $('input[name=sorting].selected').data('ordering') || '';  // Get the data-ordering attribute from the selected radio
+
+        // Manually retrieve the selected difficulty option
+        var difficulty = $('input[name=difficulty].selected').data('difficulty') || '';  // Get the data-difficulty attribute from the selected radio
+
+        // Retrieve selected tags from the checkbox list
+        var selectedTags = [];
+        $('#dropdownTag input[type=checkbox]:checked').each(function() {
+            selectedTags.push($(this).val());
+        });
+
+        // Perform AJAX request to filter courses
+        $.ajax({
+            url: '{% url "education:filter_owned_courses" %}',  // Ensure this URL matches your view name
+            data: {
+                'q': query,  // Commented for now, but ready for future use
+                'ordering': ordering,
+                'tags': selectedTags,
+                'difficulty': difficulty
+            },
+            success: function (data) {
+                $('#course-list').html(data);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching courses:', xhr.responseText);
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        // Trigger filtering when the search input changes
+        $('#simple-search').on('input', filterCourses);  // Now enabled
+
+        // Manually manage the "checked" state for sorting radio buttons
+        $('input[name=sorting]').on('click', function () {
+            $('input[name=sorting]').removeClass('selected');
+            $(this).addClass('selected');
+            filterCourses();
+        });
+
+        // Manually manage the "checked" state for difficulty radio buttons
+        $('input[name=difficulty]').on('click', function () {
+            $('input[name=difficulty]').removeClass('selected');
+            $(this).addClass('selected');
+            filterCourses();
+        });
+
+        // Trigger filtering when tag checkboxes are selected or deselected
+        $('#dropdownTag input[type=checkbox]').on('change', filterCourses);
+    });
+</script>
+{% endblock %}

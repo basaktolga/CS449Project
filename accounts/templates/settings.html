@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-md mx-auto mt-10 p-8 bg-white rounded-lg shadow-lg dark:bg-gray-800">
+    <h2 class="text-2xl font-bold mb-5 text-center text-gray-800 dark:text-white">Account Settings</h2>
+
+    <!-- Display Success Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            {% if 'settings-related' in message.tags %}
+                <div class="mb-4 p-4 rounded-lg 
+                            {% if 'success' in message.tags %}
+                                bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-200
+                            {% elif 'error' in message.tags %}
+                                bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-200
+                            {% endif %}">
+                    <p class="text-sm">{{ message }}</p>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    <!-- Password Change Section -->
+    <form method="post" action="{% url 'accounts:settings' %}">
+        {% csrf_token %}
+        <h3 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-300">Change Password</h3>
+
+        <!-- Overall Form Errors -->
+        {% if form.non_field_errors %}
+            <div class="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
+                <p class="text-sm"><span class="font-medium">Oh, snap!</span> {{ form.non_field_errors.0 }}</p>
+            </div>
+        {% endif %}
+
+        <!-- Current Password Field -->
+        <div class="mb-6">
+            <label for="old_password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                Current Password
+            </label>
+            <input type="password" id="old_password" name="old_password" class="bg-gray-50 border {% if form.old_password.errors %}border-red-500 text-red-900 placeholder-red-700{% else %}border-gray-300 text-gray-900{% endif %} text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 {% if form.old_password.errors %}dark:border-red-500{% else %}dark:border-gray-600{% endif %} dark:placeholder-gray-400 dark:text-white" required>
+            {% if form.old_password.errors %}
+                <p class="mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Error:</span> {{ form.old_password.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <!-- New Password Field -->
+        <div class="mb-6">
+            <label for="new_password1" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                New Password
+            </label>
+            <input type="password" id="new_password1" name="new_password1" class="bg-gray-50 border {% if form.new_password1.errors %}border-red-500 text-red-900 placeholder-red-700{% else %}border-gray-300 text-gray-900{% endif %} text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 {% if form.new_password1.errors %}dark:border-red-500{% else %}dark:border-gray-600{% endif %} dark:placeholder-gray-400 dark:text-white" required>
+            {% if form.new_password1.errors %}
+                <p class="mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Error:</span> {{ form.new_password1.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Confirm New Password Field -->
+        <div class="mb-6">
+            <label for="new_password2" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                Confirm New Password
+            </label>
+            <input type="password" id="new_password2" name="new_password2" class="bg-gray-50 border {% if form.new_password2.errors %}border-red-500 text-red-900 placeholder-red-700{% else %}border-gray-300 text-gray-900{% endif %} text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 {% if form.new_password2.errors %}dark:border-red-500{% else %}dark:border-gray-600{% endif %} dark:placeholder-gray-400 dark:text-white" required>
+            {% if form.new_password2.errors %}
+                <p class="mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Error:</span> {{ form.new_password2.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Change Password</button>
+    </form>
+
+    <hr class="my-8 border-gray-200 dark:border-gray-700">
+
+    <!-- Account Deletion Section -->
+    <form method="post" action="{% url 'accounts:delete_account' %}">
+        {% csrf_token %}
+        <h3 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-300">Delete Account</h3>
+
+        <!-- Password Field for Account Deletion -->
+        <div class="mb-6">
+            <label for="delete_password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+            <input type="password" id="delete_password" name="delete_password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
+        </div>
+
+        <!-- Confirm Password Field for Account Deletion -->
+        <div class="mb-6">
+            <label for="confirm_delete_password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm Password</label>
+            <input type="password" id="confirm_delete_password" name="confirm_delete_password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
+        </div>
+
+        <button type="submit" class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm w-full px-5 py-2.5 text-center dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-700">Delete Account</button>
+    </form>
+</div>
+{% endblock %}

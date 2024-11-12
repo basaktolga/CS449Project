@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ course.name }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto my-8 p-6 bg-white rounded-lg shadow-lg dark:bg-gray-900">
+    <h1 class="text-3xl font-bold mb-4 text-gray-900 dark:text-white">{{ course.name }}</h1>
+    <p class="mb-4 text-gray-700 dark:text-gray-300">{{ course.description }}</p>
+    
+    <div class="mb-6">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Lecturer:</h2>
+        {% if course.lecturer %}
+            <a href="{% url 'education:lecturer_profile' course.lecturer.id %}" class="text-blue-500 hover:underline">
+                {{ course.lecturer.name }}
+            </a>
+        {% else %}
+            <p class="text-gray-600 dark:text-gray-400">No lecturer assigned.</p>
+        {% endif %}
+    </div>
+    
+    <div class="mb-6">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Course Contents:</h2>
+        <ul class="list-disc list-inside text-gray-700 dark:text-gray-300">
+            {% for content in course.contents.all %}
+                <li>{{ content.title }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    {% if user.is_authenticated %}
+        {% if not user in course.enrolled_users.all %}
+            <form method="post" action="{% url 'education:enroll_in_course' course.slug %}">
+                {% csrf_token %}
+                <button type="submit" class="mt-4 px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">
+                    Enroll in Course
+                </button>
+            </form>
+        {% else %}
+            <p class="mt-4 text-green-600">You are already enrolled in this course.</p>
+            <a href="{% url 'education:enrolled_course' course.slug %}" class="mt-4 inline-block px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                Go to Enrolled Course
+            </a>
+        {% endif %}
+    {% else %}
+        <p class="mt-4 text-red-600">Please <a href="{% url 'accounts:login' %}" class="text-blue-500 hover:underline">log in</a> to enroll.</p>
+    {% endif %}
+</div>
+{% endblock %}

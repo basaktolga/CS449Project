@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Send a Ticket{% endblock %}
+
+{% block content %}
+<!-- Main container with centered content -->
+<div class="min-h-screen p-4">
+    <div class="max-w-3xl mx-auto"> <!-- Added max-width and margin auto -->
+        <!-- Ticket buttons -->
+        <div class="flex justify-between mb-4">
+            <button class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Send a Ticket</button>
+            <a href="{% url 'accounts:my_tickets' %}" class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">My Tickets</a>
+        </div>
+
+        <!-- Ticket Form -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6"> <!-- Added more prominent shadow -->
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Send Ticket</h3>
+            
+            <form method="POST" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+
+                <!-- Messages -->
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if message.tags == "success" %}
+                        <div class="flex items-center p-4 mb-4 text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400">
+                            <svg class="w-4 h-4 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+                            </svg>
+                            {{ message }}
+                        </div>
+                        {% elif message.tags == "error" %}
+                        <div class="flex items-center p-4 mb-4 text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400">
+                            <svg class="w-4 h-4 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+                            </svg>
+                            {{ message }}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+
+                <!-- Title Field -->
+                <div>
+                    <label for="id_title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</label>
+                    <input type="text" id="id_title" name="title" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" value="{{ form.title.value }}" oninput="validateInput(this)" required>
+                    {{ form.title.errors }}
+                </div>
+
+                <!-- Category Field -->
+                <div>
+                    <label for="id_category" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
+                    <select id="id_category" name="category" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+                        <option value="" selected>Select a category</option>
+                        <option value="Account Management and Security">Account Management and Security</option>
+                        <option value="Information and Troubleshooting">Information and Troubleshooting</option>
+                        <option value="Purchases and Subscriptions">Purchases and Subscriptions</option>
+                        <option value="General">General</option>
+                    </select>
+                </div>
+
+                <!-- Topic Field -->
+                <div>
+                    <label for="id_topic" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Please state your topic</label>
+                    <textarea id="id_topic" name="topic" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" oninput="validateInput(this)">{{ form.topic.value }}</textarea>
+                    {{ form.topic.errors }}
+                </div>
+
+                <!-- File Upload -->
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="id_attachment">Upload file</label>
+                    <input class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="id_attachment" name="attachment" type="file" accept=".pdf, .doc, .docx, .jpg, .jpeg, .png">
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">Maximum size of 10MB per file. Size limit for all files is 20MB</p>
+                    {{ form.attachment.errors }}
+                </div>
+
+                <!-- reCAPTCHA -->
+                <div class="g-recaptcha" data-sitekey="6LdpXVsqAAAAAK94LP4aSOUCEIHU52Plkdt8w65g"></div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Submit Ticket</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- reCAPTCHA Script -->
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+<!-- Validation Script -->
+<script>
+    function validateInput(input) {
+        const value = input.value;
+        const regex = /<[^>]*>|(https?:\/\/[^\s]+)/g;
+        if (regex.test(value)) {
+            input.setCustomValidity("HTML tags and links are not allowed.");
+        } else {
+            input.setCustomValidity("");
+        }
+    }
+</script>
+{% endblock %}

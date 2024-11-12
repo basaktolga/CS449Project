@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ lecturer.name }}'s Profile{% endblock %}
+
+{% block content %}
+<div class="container mx-auto my-8 p-6 bg-white border border-gray-200 rounded shadow-lg dark:bg-gray-800 dark:border-gray-700">
+    <div class="flex flex-col md:flex-row items-center">
+        <div class="w-full md:w-1/3 mb-4 md:mb-0">
+            <img src="{% static 'images/default_profile_picture.jpg' %}" alt="{{ lecturer.name }}" class="w-48 h-48 object-cover rounded-full mx-auto">
+        </div>
+        <div class="w-full md:w-2/3 md:ml-6">
+            <h1 class="text-3xl font-bold mb-2 text-gray-900 dark:text-white">{{ lecturer.name }}</h1>
+            <p class="text-gray-600 dark:text-gray-300 mb-4">{{ lecturer.bio|default:"No biography available." }}</p>
+            <p class="text-gray-600 dark:text-gray-300"><strong>Email:</strong> <a href="mailto:{{ lecturer.email }}" class="text-blue-500 hover:underline">{{ lecturer.email }}</a></p>
+        </div>
+    </div>
+
+    <hr class="my-6 border-gray-300 dark:border-gray-600">
+
+    <div>
+        <h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Courses by {{ lecturer.name }}</h2>
+        {% if lecturer.courses.all %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {% for course in lecturer.courses.all %}
+                    <div class="bg-white border border-gray-200 rounded-lg shadow p-4 dark:bg-gray-700 dark:border-gray-600">
+                        <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-white">{{ course.name }}</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-2">{{ course.description|truncatewords:15 }}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Difficulty: {{ course.difficulty|capfirst }}</p>
+                        <a href="{% url 'education:course_page' course.slug %}" class="mt-3 inline-block text-blue-500 hover:underline">View Course</a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-600 dark:text-gray-300">No courses available at the moment.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

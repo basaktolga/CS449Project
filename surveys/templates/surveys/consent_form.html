@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-screen-md mx-auto my-8 p-6 bg-white border border-gray-200 rounded shadow">
+    <h2 class="text-2xl font-bold mb-4">{{ consent_content.title }}</h2>
+    <div class="mt-4">
+        <!-- Render the consent content as safe to allow HTML -->
+        {{ consent_content.content|safe }}
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mt-4">
+            <label class="inline-flex items-center">
+                <input type="checkbox" name="consent" value="yes" class="form-checkbox" required>
+                <span class="ml-2">{{ _("I have read and agree to the terms above.") }}</span>
+            </label>
+        </div>
+        <button type="submit" class="mt-4 px-6 py-2 bg-blue-500 text-white rounded">
+            {{ _("Proceed to Survey") }}
+        </button>
+    </form>
+</div>
+{% endblock %}

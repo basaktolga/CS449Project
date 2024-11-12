@@ -1,0 +1,294 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Default Title{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css">
+</head>
+<body class="bg-gray-100">
+
+    <!-- Top Navbar -->
+    <nav class="fixed top-0 z-50 w-full bg-blue-900 border-b border-blue-800 dark:bg-gray-800 dark:border-gray-700">
+        <div class="px-3 py-3 lg:px-5 lg:pl-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center justify-start">
+                    <!-- Hamburger Button for Sidebar -->
+                    <button id="sidebar-toggle" type="button" aria-controls="logo-sidebar" class="inline-flex items-center p-2 text-sm text-white rounded-lg hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-700 dark:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+                        <span class="sr-only">Open sidebar</span>
+                        <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
+                        </svg>
+                    </button>
+                    <a href="{% url 'education:user_dashboard' %}" class="flex ms-2 md:me-24">
+                        <!-- <img src="{% static 'images/CyberSec4OTLogo.svg' %}" class="h-8 me-3" alt="Logo"> -->
+                        <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap text-white">CyberSec4OT</span>
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <!-- Dark Mode Toggle -->
+                    <button id="theme-toggle" type="button" class="text-white hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-700 rounded-lg text-sm p-2.5 dark:text-white dark:hover:bg-gray-700">
+                        <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                        </svg>
+                        <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+                        </svg>
+                    </button>
+                    <!-- Notifications Button -->
+                    <div class="relative">
+                        <button type="button" class="relative inline-flex items-center p-2 text-sm font-medium text-center text-white hover:text-gray-200 focus:outline-none" data-dropdown-toggle="dropdown-notifications">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+                            </svg>
+                            <span class="sr-only">Notifications</span>
+                            {% if unread_notifications_count > 0 %}
+                            <div class="absolute inline-flex w-2 h-2 bg-red-500 rounded-full -top-0.5 -right-0.5"></div>
+                            {% endif %}
+                        </button>
+                    
+
+                        <!-- Dropdown -->
+                        <div id="dropdown-notifications" class="z-10 hidden bg-white divide-y divide-gray-100 rounded shadow w-60 dark:bg-gray-700 dark:divide-gray-600">
+                            <div class="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">Notifications</div>
+                            <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownButton">
+                                {% for notification in notifications %}
+                                <li>
+                                    <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                        <p class="mb-0">{{ notification.message }}</p>
+                                        <small class="text-gray-500 dark:text-gray-400">{{ notification.created_at|timesince }} ago</small>
+                                    </a>
+                                </li>
+                                {% empty %}
+                                <li>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">No new notifications</a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- User Profile Dropdown -->
+                    <div class="flex items-center ms-3">
+                        <div>
+                            <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user">
+                                <span class="sr-only">Open user menu</span>
+                                <img class="w-8 h-8 rounded-full" src="{% static 'images/pp.jpg' %}" alt="user photo">
+                            </button>
+                        </div>
+                        <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
+                            <div class="px-4 py-3">
+                                <p class="text-sm text-gray-900 dark:text-white">{{ user.username }}</p>
+                                <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300">{{ user.email }}</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Points: {{ user.profile.points }}</p>
+                            </div>
+                            <ul class="py-1">
+                                <li>
+                                    <a href="{% url 'education:user_dashboard' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'accounts:settings' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white">Settings</a>
+                                </li>
+                                <li>
+                                    <form method="post" action="{% url 'accounts:logout' %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="w-full text-start block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white">
+                                        Sign out
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- Overlay for Sidebar -->
+    <div id="sidebar-overlay" class="fixed inset-0 z-30 hidden bg-black bg-opacity-50"></div>
+
+    <!-- Sidebar -->
+    <aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700" aria-label="Sidebar">
+        <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
+            <ul class="space-y-2 font-medium">
+                <li>
+                    <a href="{% url 'education:user_dashboard' %}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                        <i class="fa fa-home w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+                        <span class="ms-3">Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <button type="button" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="courses-dropdown" data-collapse-toggle="courses-dropdown">
+                        <i class="fa fa-laptop w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+                        <span class="flex-1 ml-3 text-left whitespace-nowrap">Courses</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <ul id="courses-dropdown" class="hidden py-2 space-y-2">
+                        <li>
+                            <a href="{% url 'education:all_courses' %}" class="block px-4 py-2 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">All Courses</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'education:available_courses' %}" class="block px-4 py-2 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Available Courses</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'education:owned_courses' %}" class="block px-4 py-2 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Owned Courses</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="{% url 'education:paths' %}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                        <i class="fa fa-map-signs w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+                        <span class="ms-3">Paths</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'education:my_badges' %}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                        <i class="fa fa-award w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+                        <span class="ms-3">Badges</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'education:my_certificates' %}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                        <i class="fa fa-certificate w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+                        <span class="ms-3">Certificates</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                        <i class="fa fa-users w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+                        <span class="ms-3">Friends</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                        <i class="fa fa-trophy w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+                        <span class="ms-3">Leaderboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'accounts:send_ticket' %}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                        <i class="fa fa-ticket-alt w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+                        <span class="ms-3">Help & Support</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'faq' %}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                        <i class="fa fa-question-circle w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+                        <span class="ms-3">FAQ</span>
+                    </a>
+                </li>
+                <li>
+                    <button type="button" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="settings-dropdown" data-collapse-toggle="settings-dropdown">
+                        <i class="fa fa-cog w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+                        <span class="flex-1 ml-3 text-left whitespace-nowrap">Settings</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <ul id="settings-dropdown" class="hidden py-2 space-y-2">
+                        <li>
+                            <a href="{% url 'accounts:settings' %}" class="block px-4 py-2 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Account</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'accounts:activity_log' %}" class="block px-4 py-2 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Activity Log</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="{% url 'payment:billing' %}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                        <i class="fa fa-credit-card w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"></i>
+                        <span class="ms-3">Billing</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div id="main-content" class="p-4 mt-14 flex flex-col min-h-[calc(100vh-3.5rem)]">
+        <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 flex-grow">
+            {% block content %}
+            <!-- Page content will go here -->
+            {% endblock %}
+        </div>
+        
+        
+    </div>
+    <!-- Footer -->
+    <footer class="w-full bg-gray-200 text-center py-4 border-t border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-white">
+        &copy; 2024 ENS491
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+    <script>
+        const sidebarToggleBtn = document.getElementById('sidebar-toggle');
+        const sidebar = document.getElementById('logo-sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const mainContent = document.getElementById('main-content');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+            
+            // Adjust main content when sidebar is opened/closed
+            if (!sidebar.classList.contains('-translate-x-full')) {
+                mainContent.classList.add('ml-64');  // Shift content when sidebar is open
+            } else {
+                mainContent.classList.remove('ml-64');  // Center content when sidebar is closed
+            }
+        }
+
+        sidebarToggleBtn.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', toggleSidebar);
+    </script>
+
+    <script>
+        // Dark mode toggle functionality
+        const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+        const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+        const themeToggleBtn = document.getElementById('theme-toggle');
+
+        // Change the icons inside the button based on previous settings
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            themeToggleLightIcon.classList.remove('hidden');
+            document.documentElement.classList.add('dark');
+        } else {
+            themeToggleDarkIcon.classList.remove('hidden');
+            document.documentElement.classList.remove('dark');
+        }
+
+        themeToggleBtn.addEventListener('click', function() {
+            // Toggle icons
+            themeToggleDarkIcon.classList.toggle('hidden');
+            themeToggleLightIcon.classList.toggle('hidden');
+
+            // If is set in localStorage
+            if (localStorage.getItem('color-theme')) {
+                if (localStorage.getItem('color-theme') === 'light') {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                }
+            } else {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-md mx-auto mt-10 p-8 bg-white rounded-lg shadow-lg dark:bg-gray-800">
+    <h2 class="text-2xl font-bold mb-5 text-center text-gray-800 dark:text-white">Register</h2>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="grid gap-6 mb-6 md:grid-cols-2">
+            <!-- First Name Field -->
+            <div>
+                <label for="first_name" class="block mb-2 text-sm font-medium {% if form.first_name.errors %}text-red-700 dark:text-red-500{% else %}text-gray-900 dark:text-white{% endif %}">
+                    First name
+                </label>
+                <input type="text" id="first_name" name="first_name" value="{{ form.first_name.value|default_if_none:'' }}" class="bg-gray-50 border {% if form.first_name.errors %}border-red-500 text-red-900 placeholder-red-700{% else %}border-gray-300 text-gray-900{% endif %} text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 {% if form.first_name.errors %}dark:border-red-500{% else %}dark:border-gray-600{% endif %} dark:placeholder-gray-400 dark:text-white" placeholder="John" required>
+                {% if form.first_name.errors %}
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Oh, snap!</span> {{ form.first_name.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Last Name Field -->
+            <div>
+                <label for="last_name" class="block mb-2 text-sm font-medium {% if form.last_name.errors %}text-red-700 dark:text-red-500{% else %}text-gray-900 dark:text-white{% endif %}">
+                    Last name
+                </label>
+                <input type="text" id="last_name" name="last_name" value="{{ form.last_name.value|default_if_none:'' }}" class="bg-gray-50 border {% if form.last_name.errors %}border-red-500 text-red-900 placeholder-red-700{% else %}border-gray-300 text-gray-900{% endif %} text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 {% if form.last_name.errors %}dark:border-red-500{% else %}dark:border-gray-600{% endif %} dark:placeholder-gray-400 dark:text-white" placeholder="Doe" required>
+                {% if form.last_name.errors %}
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Oh, snap!</span> {{ form.last_name.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Email Field -->
+            <div>
+                <label for="email" class="block mb-2 text-sm font-medium {% if form.email.errors %}text-red-700 dark:text-red-500{% else %}text-gray-900 dark:text-white{% endif %}">
+                    Email address
+                </label>
+                <input type="email" id="email" name="email" value="{{ form.email.value|default_if_none:'' }}" class="bg-gray-50 border {% if form.email.errors %}border-red-500 text-red-900 placeholder-red-700{% else %}border-gray-300 text-gray-900{% endif %} text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 {% if form.email.errors %}dark:border-red-500{% else %}dark:border-gray-600{% endif %} dark:placeholder-gray-400 dark:text-white" placeholder="john.doe@company.com" required>
+                {% if form.email.errors %}
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Oh, snap!</span> {{ form.email.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Username Field -->
+            <div>
+                <label for="username" class="block mb-2 text-sm font-medium {% if form.username.errors %}text-red-700 dark:text-red-500{% else %}text-gray-900 dark:text-white{% endif %}">
+                    Username
+                </label>
+                <input type="text" id="username" name="username" value="{{ form.username.value|default_if_none:'' }}" class="bg-gray-50 border {% if form.username.errors %}border-red-500 text-red-900 placeholder-red-700{% else %}border-gray-300 text-gray-900{% endif %} text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 {% if form.username.errors %}dark:border-red-500{% else %}dark:border-gray-600{% endif %} dark:placeholder-gray-400 dark:text-white" placeholder="Your username" required>
+                {% if form.username.errors %}
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Oh, snap!</span> {{ form.username.errors.0 }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Password Fields -->
+        <div class="mb-6">
+            <label for="password1" class="block mb-2 text-sm font-medium {% if form.password1.errors %}text-red-700 dark:text-red-500{% else %}text-gray-900 dark:text-white{% endif %}">
+                Password
+            </label>
+            <input type="password" id="password1" name="password1" class="bg-gray-50 border {% if form.password1.errors %}border-red-500 text-red-900 placeholder-red-700{% else %}border-gray-300 text-gray-900{% endif %} text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 {% if form.password1.errors %}dark:border-red-500{% else %}dark:border-gray-600{% endif %} dark:placeholder-gray-400 dark:text-white" required>
+            {% if form.password1.errors %}
+                <p class="mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Oh, snap!</span> {{ form.password1.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <div class="mb-6">
+            <label for="password2" class="block mb-2 text-sm font-medium {% if form.password2.errors %}text-red-700 dark:text-red-500{% else %}text-gray-900 dark:text-white{% endif %}">
+                Confirm Password
+            </label>
+            <input type="password" id="password2" name="password2" class="bg-gray-50 border {% if form.password2.errors %}border-red-500 text-red-900 placeholder-red-700{% else %}border-gray-300 text-gray-900{% endif %} text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 {% if form.password2.errors %}dark:border-red-500{% else %}dark:border-gray-600{% endif %} dark:placeholder-gray-400 dark:text-white" required>
+            {% if form.password2.errors %}
+                <p class="mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Oh, snap!</span> {{ form.password2.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <div class="flex items-start mb-6">
+            <div class="flex items-center h-5">
+                <input id="terms" type="checkbox" required class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800">
+            </div>
+            <label for="terms" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">I agree with the <a href="#" class="text-blue-600 hover:underline dark:text-blue-500">terms and conditions</a>.</label>
+        </div>
+
+        <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Register</button>
+    </form>
+</div>
+{% endblock %}

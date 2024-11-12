@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Activity Log{% endblock %}
+
+{% block content %}
+<div class="min-h-screen p-4">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header Section -->
+        <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Activity Log</h2>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Track your account activity and security information</p>
+        </div>
+
+        <!-- Last Login Information Card -->
+        <div class="p-6 mb-6 bg-white rounded-lg shadow-lg dark:bg-gray-800">
+            <h3 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">
+                <i class="fas fa-shield-alt mr-2"></i>Security Overview
+            </h3>
+            
+            {% if last_activity %}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- IP Address -->
+                <div class="p-4 bg-gray-50 rounded-lg dark:bg-gray-700">
+                    <div class="flex items-center">
+                        <div class="inline-flex flex-shrink-0 justify-center items-center w-8 h-8 text-blue-500 bg-blue-100 rounded-lg dark:bg-blue-800 dark:text-blue-200">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                        <div class="ml-3">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">IP Address</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ last_activity.ip_address }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location -->
+                <div class="p-4 bg-gray-50 rounded-lg dark:bg-gray-700">
+                    <div class="flex items-center">
+                        <div class="inline-flex flex-shrink-0 justify-center items-center w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="ml-3">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">Location</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ last_activity.location }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Last Login Time -->
+                <div class="p-4 bg-gray-50 rounded-lg dark:bg-gray-700">
+                    <div class="flex items-center">
+                        <div class="inline-flex flex-shrink-0 justify-center items-center w-8 h-8 text-purple-500 bg-purple-100 rounded-lg dark:bg-purple-800 dark:text-purple-200">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="ml-3">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">Last Login</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ last_activity.timestamp }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="p-4 text-sm text-blue-800 bg-blue-50 rounded-lg dark:bg-gray-700 dark:text-blue-400">
+                <i class="fas fa-info-circle mr-2"></i>No login information available.
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Activity Timeline -->
+        <div class="p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800">
+            <h3 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">
+                <i class="fas fa-history mr-2"></i>Recent Activity
+            </h3>
+
+            {% if activity_logs %}
+            <ol class="relative border-l border-gray-200 dark:border-gray-700">
+                {% for log in activity_logs %}
+                <li class="mb-10 ml-4">
+                    <span class="absolute flex items-center justify-center w-4 h-4 bg-blue-100 rounded-full -left-2 ring-4 ring-white dark:ring-gray-800 dark:bg-blue-900">
+                        <i class="fas fa-link text-blue-800 dark:text-blue-300 text-xs"></i>
+                    </span>
+                    <div class="items-center justify-between p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:flex dark:bg-gray-700 dark:border-gray-600">
+                        <time class="mb-1 text-xs font-normal text-gray-400 sm:order-last sm:mb-0">{{ log.timestamp }}</time>
+                        <div class="text-sm font-normal text-gray-500 dark:text-gray-300">Visited <span class="font-semibold text-blue-600 dark:text-blue-400">{{ log.url_visited }}</span></div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ol>
+            {% else %}
+            <div class="p-4 text-sm text-gray-500 bg-gray-50 rounded-lg dark:bg-gray-700 dark:text-gray-400">
+                <i class="fas fa-info-circle mr-2"></i>No activity recorded yet.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Learning Paths{% endblock %}
+
+{% block content %}
+<div class="p-6 bg-gray-50 dark:bg-gray-900">
+    <!-- Paths Section Header -->
+    <div class="mb-6">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">Cybersecurity Learning Paths</h2>
+        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Choose your learning path and start your cybersecurity journey</p>
+    </div>
+
+    <!-- Paths Grid -->
+    <div class="space-y-4">
+        {% for path in paths %}
+        <!-- Path Card -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+            <div class="w-full" x-data="{ open: false }">
+                <!-- Path Header -->
+                <button @click="open = !open" class="w-full">
+                    <div class="p-6 flex items-start space-x-6">
+                        <!-- Path Image -->
+                        <div class="flex-shrink-0">
+                            {% if path.image %}
+                                <img class="w-32 h-32 object-cover rounded-lg" src="{{ path.image.url }}" alt="{{ path.name }}">
+                            {% else %}
+                                <img class="w-32 h-32 object-cover rounded-lg" src="{% static 'images/path1.jpg' %}" alt="Default Path Image">
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Path Info -->
+                        <div class="flex-1 text-left">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">{{ path.name }}</h3>
+                            <p class="mt-2 text-gray-600 dark:text-gray-400">{{ path.description }}</p>
+                            
+                            <!-- Path Stats -->
+                            <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                    </svg>
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">{{ path.difficulty }}</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">{{ path.duration }}</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                    </svg>
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">{{ path.lessons }} Lessons</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                                    </svg>
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">{{ path.points }} Points</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Expand Button -->
+                        <div class="flex-shrink-0">
+                            <svg class="w-6 h-6 text-gray-400 transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+
+                <!-- Expandable Content -->
+                <div x-show="open" x-collapse class="border-t border-gray-200 dark:border-gray-700">
+                    <div class="p-6">
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Included Courses</h4>
+                        <div class="grid gap-4">
+                            {% for course in path.courses.all %}
+                            <div class="flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span class="text-gray-700 dark:text-gray-300">{{ course.name }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        {% if path.faq %}
+                        <div class="mt-6">
+                            <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Frequently Asked Questions</h4>
+                            <div class="prose dark:prose-invert">
+                                {{ path.faq|linebreaks }}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Alpine.js for handling dropdowns -->
+<script src="//unpkg.com/alpinejs" defer></script>
+{% endblock %}
