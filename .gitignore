@@ -1,0 +1,16 @@
+node_modules/
+myenv/
+accounts/__pycache__/
+accounts/migrations/
+CyberSec4OT/__pycache__/
+CyberSec4OT/migrations/
+education/__pycache__/
+education/migrations/
+payment/__pycache__/
+payment/migrations/
+surveys/__pycache__/
+surveys/migrations/
+surveys/admins/__pycache__/
+surveys/admins/v2/__pycache__/
+surveys/templatetags/__pycache__/
+
