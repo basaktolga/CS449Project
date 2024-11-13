@@ -14,6 +14,10 @@ from .models import Ticket
 from django.http import JsonResponse
 import json
 from .models import UserActivityLog
+from .utils import get_client_ip, get_geolocation, get_ip_reputation
+from django.http import HttpResponse
+import csv
+
 
 def register(request):
     if request.method == "POST":
@@ -22,7 +26,20 @@ def register(request):
             user = form.save()
             login(request, user)
             messages.success(request, "Registration successful.")
+            from .models import UserActivityLog
+            ip_address = get_client_ip(request)
+            location = get_geolocation(ip_address)
+            UserActivityLog.objects.create(
+                user=user,
+                attempt_type='New User Signed Up',
+                url_visited=request.path,
+                ip_address=request.META.get('REMOTE_ADDR'),
+                http_status='201 Created',
+                location=location
+            )
+            
             return redirect("education:user_dashboard")
+            
         else:
             messages.error(request, "Please correct the errors below.")
     else:
@@ -61,7 +78,8 @@ def delete_account(request):
 def send_ticket(request):
     if request.method == 'POST':
         form = TicketForm(request.POST, request.FILES)
-
+        ip_address = get_client_ip(request)
+        location = get_geolocation(ip_address)
         captcha_response = request.POST.get('g-recaptcha-response')
         data = {
             'secret': settings.RECAPTCHA_SECRET_KEY,  
@@ -72,6 +90,16 @@ def send_ticket(request):
 
         if not result.get('success'):
             messages.error(request, 'Please complete the CAPTCHA.')
+             # Log failure due to CAPTCHA
+            UserActivityLog.objects.create(
+                user=request.user,
+                attempt_type='Failed to Submit Ticket',
+                url_visited='/send_ticket/',
+                ip_address = ip_address,
+                http_status='403 Forbidden',
+                location = location
+                
+            )
             return render(request, 'send_ticket.html', {'form': form})
 
 
@@ -81,6 +109,15 @@ def send_ticket(request):
             ticket.user = request.user  # Associate the ticket with the current user
             ticket.status = 'Open'  # Set the default status to 'Open'
             ticket.save()
+            UserActivityLog.objects.create(
+                user=request.user,
+                attempt_type='Submitted Ticket',
+                url_visited='/send_ticket/',
+                ip_address = ip_address,
+                http_status='200 OK',
+                location = location
+                
+            )
             messages.success(request, 'Your ticket has been submitted successfully.')
             Notification.objects.create(
                 user=request.user,
@@ -91,6 +128,14 @@ def send_ticket(request):
         else:
             print(form.errors)
             messages.error(request, 'There was an error submitting your ticket. Please try again.')
+            UserActivityLog.objects.create(
+                user=request.user,
+                attempt_type='Failed to Submit Ticket',
+                url_visited='/send_ticket/',
+                ip_address = ip_address,
+                http_status='400 Bad Request',
+                location=location
+            )
 
     else:
         form = TicketForm()
@@ -115,6 +160,8 @@ def my_tickets(request):
 
 @login_required
 def close_ticket(request, ticket_id):
+    ip_address = get_client_ip(request)
+    location = get_geolocation(ip_address)
     ticket = get_object_or_404(Ticket, id=ticket_id, user=request.user)  # Ensure the ticket belongs to the user
     if ticket.status == 'Open':  # Check if the ticket is open
         ticket.status = 'Closed'
@@ -124,6 +171,14 @@ def close_ticket(request, ticket_id):
             user=request.user,
             message=f"Your ticket: {ticket.title} has been closed.",
             is_read=False
+        )
+        UserActivityLog.objects.create(
+            user=request.user,
+            attempt_type='Ticket is Closed',
+            url_visited=f"/ticket/{ticket.id}/",
+            ip_address = ip_address,
+            http_status='200 OK',
+            location=location
         )
 
     else:
@@ -174,49 +229,135 @@ def ticket_detail(request, ticket_id):
         'responses_list': responses_list,
     })
 
+
+
 def activity_log_view(request):
-    if request.user.is_authenticated:
-        last_activity = UserActivityLog.objects.filter(user=request.user).order_by('-timestamp').first()
-        activity_logs = UserActivityLog.objects.filter(user=request.user).order_by('-timestamp')
+    from .models import UserActivityLog
+    filter_type = request.GET.get("filter", "all")  # Get the selected filter type
+    export_csv = request.GET.get('export') == 'csv'
+
+    # Define log filtering based on the selected filter type
+    if filter_type == "auth":
+        logs = UserActivityLog.objects.filter(
+            user=request.user,
+            attempt_type__in=["Logged In", "Logged Out", "Failed to Log In"]
+        )
+        csv_filename = "auth_based_logs.csv"
+    elif filter_type == "activity":
+        logs = UserActivityLog.objects.filter(user=request.user).exclude(
+            attempt_type__in=["Logged In", "Logged Out", "Failed to Log In", "Page Visit"]
+        )
+        csv_filename = "activity_based_logs.csv"
     else:
-        last_activity = None
-        activity_logs = []
+        logs = UserActivityLog.objects.filter(user=request.user).exclude(
+            attempt_type="Page Visit"
+        )
+        csv_filename = "all_logs.csv"
+
+    # Export CSV if requested
+    if export_csv:
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="{csv_filename}"'
+
+        writer = csv.writer(response)
+        writer.writerow(['User', 'Attempt Type', 'IP Address', 'HTTP Status', 'Location', 'Timestamp'])
+
+        for log in logs:
+            if log.timestamp:
+                localized_timestamp = timezone.localtime(log.timestamp)
+                formatted_timestamp = localized_timestamp.strftime('%Y-%m-%d %H:%M:%S')
+            else:
+                formatted_timestamp = 'N/A'
+            
+            writer.writerow([
+                request.user.username if log.user else 'Unknown',
+                log.attempt_type,
+                log.ip_address,
+                log.http_status,
+                log.location,
+                formatted_timestamp,
+            ])
+
+        # Export visited URLs section for all filters
+        writer.writerow([])  # Blank row for separation
+        writer.writerow(['Visited URLs'])  # Header for URLs section
+        writer.writerow(['URL', 'Timestamp'])
+
+        visited_urls = UserActivityLog.objects.filter(
+            user=request.user,
+            attempt_type="Page Visit"
+        ).values('url_visited', 'timestamp')
+
+        for url in visited_urls:
+            writer.writerow([url['url_visited'], url['timestamp']])
+
+        return response  # Return CSV response immediately
+
+    # List of local IP addresses to hide
+    local_ip_blacklist = ['127.0.0.1', '192.168.1.1', '10.0.0.1'] 
+
+    def hide_local_ip(log_entry):
+        """Hide IP and location if the IP address is in the blacklist."""
+        if log_entry.ip_address in local_ip_blacklist:
+            log_entry.ip_address = ' '
+            log_entry.location = ' '
+        return log_entry
+
+    if request.user.is_authenticated:
+        url_visited = UserActivityLog.objects.filter(user=request.user, attempt_type="Page Visit").values('url_visited', 'timestamp')
+        
+        if filter_type == "auth":
+            last_attempts = UserActivityLog.objects.filter(
+                user=request.user,
+                attempt_type__in=["Logged In", "Logged Out", "Failed to Log In"]
+            ).order_by('-timestamp')
+        elif filter_type == "activity":
+            last_attempts = UserActivityLog.objects.filter(
+                user=request.user
+            ).exclude(attempt_type__in=["Logged In", "Logged Out", "Failed to Log In", "Page Visit"]).order_by('-timestamp')
+        else:
+            last_attempts = UserActivityLog.objects.filter(
+                user=request.user
+            ).exclude(attempt_type="Page Visit").order_by('-timestamp')
+
+        # Check each log's IP address and clear it if in blacklist
+        last_attempts = [hide_local_ip(log) for log in last_attempts]
+
+        last_successful_login = UserActivityLog.objects.filter(
+            user=request.user,
+            attempt_type='Logged In'
+        ).order_by('-timestamp').first()
+
+        last_unsuccessful_login = UserActivityLog.objects.filter(
+            user=request.user,
+            attempt_type='Failed to Log In'
+        ).order_by('-timestamp').first()
+
+        if last_successful_login:
+            last_successful_login = hide_local_ip(last_successful_login)
+        if last_unsuccessful_login:
+            last_unsuccessful_login = hide_local_ip(last_unsuccessful_login)
+    else:
+        last_successful_login = None
+        last_unsuccessful_login = None
+        last_attempts = []
+        url_visited = []
 
     return render(request, 'activity_log.html', {
-        'last_activity': last_activity,
-        'activity_logs': activity_logs
+        'last_successful_login': last_successful_login,
+        'last_unsuccessful_login': last_unsuccessful_login,
+        'last_attempts': last_attempts,
+        'filter_type': filter_type,
+        'url_visited': url_visited
     })
 
-def save_location(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        latitude = data.get('latitude')
-        longitude = data.get('longitude')
+def check_ip_in_user_view(request):
+    user_ip = request.META.get('REMOTE_ADDR')
+    ip_data = get_ip_reputation(user_ip)
+    # Process and store the IP reputation data as needed
 
-        if latitude is not None and longitude is not None:
-            # Save the location or use a service to get the city/country from the coordinates
-            location = f"{latitude}, {longitude}"
 
-            # You can update the user's activity log here
-            UserActivityLog.objects.create(
-                user=request.user,
-                activity="Logged in with location",
-                location=location
-            )
-            
-            return JsonResponse({'status': 'success', 'location': location})
-        else:
-            return JsonResponse({'status': 'error', 'message': 'Unable to get location'}, status=400)
-    
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
-def get_city_from_coords(latitude, longitude):
-    # Use a reverse geocoding API (like Google Maps or OpenCage)
-    response = requests.get(f"https://api.opencagedata.com/geocode/v1/json?q={latitude}+{longitude}&key=YOUR_API_KEY")
-    data = response.json()
-    if data['results']:
-        return data['results'][0]['formatted']
-    return "Unknown location"
         
         
 def get_notifications(request):

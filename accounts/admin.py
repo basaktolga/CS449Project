@@ -5,6 +5,12 @@ from django import forms
 from .models import *
 from accounts.models import *
 from education.models import *
+from django.db.models.signals import post_save
+import requests
+from .utils import get_ip_reputation
+import csv
+from django.http import HttpResponse
+from django.dispatch import receiver
 
 # Inline for Profile in User Admin
 class ProfileInline(admin.StackedInline):
@@ -131,3 +137,152 @@ class TicketAdmin(admin.ModelAdmin):
     )
 
 admin.site.register(Ticket, TicketAdmin)
+
+
+class AttemptTypeFilter(admin.SimpleListFilter):
+    title = 'Log Type'  # Display name for the filter in the admin panel
+    parameter_name = 'log_type'  # URL parameter for this filter
+
+    def lookups(self, request, model_admin):
+        """Define filter options for admin panel dropdown."""
+        return [
+            ('all', 'All Logs'),
+            ('auth', 'Authentication Logs'),
+            ('activity', 'Activity Logs'),
+        ]
+
+    def queryset(self, request, queryset):
+        """Return the filtered queryset based on selected log type."""
+        # Define authentication attempt types
+        auth_attempts = ['Logged In', 'Failed to Log In', 'Logged Out']
+        
+        if self.value() == 'auth':
+            # Filter for authentication-related logs
+            return queryset.filter(attempt_type__in=auth_attempts)
+        elif self.value() == 'activity':
+            # Filter for activity logs only, excluding authentication attempts
+            return queryset.exclude(attempt_type__in=auth_attempts)
+        return queryset  # Show all logs if "All Logs" is selected
+
+
+
+@admin.register(UserActivityLog)
+class UserActivityLogAdmin(admin.ModelAdmin):
+    list_display = ('user', 'ip_address', 'location', 'attempt_type', 'http_status', 'timestamp')
+    #list_filter = ('attempt_type', 'http_status', )  # Filter by attempt type and HTTP status
+    list_filter = (AttemptTypeFilter, 'http_status') 
+    search_fields = ('user__username', 'ip_address', 'location')  # Allow searching by user, IP address, or location
+    list_per_page = 10  # Display only 10 logs per page
+    actions = ["export_logs_and_urls_csv", ]
+
+    def get_queryset(self, request):
+        """Return all logs for admin, but allow user-specific filtering in other views."""
+        queryset = super().get_queryset(request)
+        
+            
+        
+        return queryset.exclude(attempt_type="Page Visit")
+
+    def has_change_permission(self, request, obj=None):
+        """Disable change permissions to prevent editing logs."""
+        return False
+
+    def has_add_permission(self, request):
+        """Disable add permissions, logs are only created via middleware."""
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        """Allow admins to delete logs if needed."""
+        return True
+
+    def export_logs_and_urls_csv(self, request, queryset):
+        """
+        #Export logs and visited URLs to a single CSV file.
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="user_activity_logs.csv"'
+        """
+        #Export logs and visited URLs to a single CSV file based on filtered logs.
+        # Determine the type of logs being exported based on the applied filters
+        if 'attempt_type' in request.GET:
+            attempt_type = request.GET['attempt_type']
+            if attempt_type == "Activity Log":
+                filename = "activity_based_logs.csv"
+                queryset = queryset.filter(attempt_type="Activity Log")
+            elif attempt_type == "Authentication Log":
+                filename = "auth_based_logs.csv"
+                queryset = queryset.filter(attempt_type="Authentication Log")
+            else:
+                filename = "user_activity_logs.csv"  # Default for all logs
+        else:
+            filename = "user_activity_logs.csv"  # Default for all logs
+
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        writer = csv.writer(response)
+
+        # Write header for logs section
+        writer.writerow(['User', 'Attempt Type', 'IP Address', 'HTTP Status', 'Location', 'Timestamp'])
+
+        # Write log data rows
+        for log in queryset:
+            
+            writer.writerow([
+                log.user.username,
+                log.attempt_type,
+                log.ip_address,
+                log.http_status,
+                log.location,
+                log.timestamp,
+            ])
+
+        # Separate section for visited URLs
+        writer.writerow([])  # Empty row to separate sections
+        writer.writerow(['Visited URLs', 'Timestamp'])  # Header for visited URLs section
+        visited_urls = UserActivityLog.objects.filter(attempt_type="Page Visit").values('user__username', 'url_visited', 'timestamp')
+        # Query all visited URLs for each user in queryset
+        #visited_urls = queryset.values('user__username', 'url_visited', 'timestamp')
+        for url_entry in visited_urls:
+            writer.writerow([
+                url_entry['user__username'],
+                url_entry['url_visited'],
+                url_entry['timestamp'],
+            ])
+
+        return response
+
+    export_logs_and_urls_csv.short_description = "Export selected logs and URLs to CSV"
+
+    def visited_urls_display(self, obj):
+        """Display visited URLs related to this log entry."""
+        visited_urls = UserActivityLog.objects.filter(user=obj.user, attempt_type="Page Visit").values('url_visited', 'timestamp')
+        return "<br>".join([f"{url['url_visited']} - <em>{url['timestamp']}</em>" for url in visited_urls]) if visited_urls else "No visited URLs"
+
+    visited_urls_display.short_description = "Visited URLs"  # Column header in the admin panel
+
+    def get_urls(self):
+        """Combine custom URLs with default admin URLs."""
+        urls = super().get_urls()
+        return urls
+   
+
+
+@receiver(post_save, sender=UserActivityLog)
+def analyze_ip_on_login(sender, instance, **kwargs):
+    if instance.attempt_type in ["Log In", "Failed Log In"]:
+        ip_data = get_ip_reputation(instance.ip_address)
+        if ip_data:
+            reputation_score = ip_data.get("reputation", 0)
+            category = ip_data.get("category", "unknown")
+
+            IPReputation.objects.update_or_create(
+                ip_address=instance.ip_address,
+                defaults={"reputation_score": reputation_score, "category": category}
+            )
+
+class IPReputationAdmin(admin.ModelAdmin):
+    list_display = ('ip_address', 'reputation_score', 'category', 'location')  # Columns to display in the admin list
+    list_filter = ('category',)  # Optional: add a filter by category
+    search_fields = ('ip_address',)  # Optional: add search functionality for IP addresses
+
+# Register your models here
+admin.site.register(IPReputation, IPReputationAdmin)
