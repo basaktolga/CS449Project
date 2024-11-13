@@ -13,4 +13,5 @@ surveys/migrations/
 surveys/admins/__pycache__/
 surveys/admins/v2/__pycache__/
 surveys/templatetags/__pycache__/
+db.sqlite3
 
