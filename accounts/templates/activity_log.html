@@ -4,94 +4,174 @@
 {% block title %}Activity Log{% endblock %}
 
 {% block content %}
-<div class="min-h-screen p-4">
-    <div class="max-w-4xl mx-auto">
+    <div class="container mx-auto p-4">
         <!-- Header Section -->
         <div class="mb-6">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Activity Log</h2>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Track your account activity and security information</p>
+            <h1 class="text-2xl font-semibold">Activity Log</h1>
         </div>
 
-        <!-- Last Login Information Card -->
-        <div class="p-6 mb-6 bg-white rounded-lg shadow-lg dark:bg-gray-800">
-            <h3 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">
-                <i class="fas fa-shield-alt mr-2"></i>Security Overview
-            </h3>
-            
-            {% if last_activity %}
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- IP Address -->
-                <div class="p-4 bg-gray-50 rounded-lg dark:bg-gray-700">
-                    <div class="flex items-center">
-                        <div class="inline-flex flex-shrink-0 justify-center items-center w-8 h-8 text-blue-500 bg-blue-100 rounded-lg dark:bg-blue-800 dark:text-blue-200">
-                            <i class="fas fa-network-wired"></i>
-                        </div>
-                        <div class="ml-3">
-                            <div class="text-sm font-medium text-gray-900 dark:text-white">IP Address</div>
-                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ last_activity.ip_address }}</div>
-                        </div>
-                    </div>
-                </div>
+       
 
-                <!-- Location -->
-                <div class="p-4 bg-gray-50 rounded-lg dark:bg-gray-700">
-                    <div class="flex items-center">
-                        <div class="inline-flex flex-shrink-0 justify-center items-center w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
-                            <i class="fas fa-map-marker-alt"></i>
-                        </div>
-                        <div class="ml-3">
-                            <div class="text-sm font-medium text-gray-900 dark:text-white">Location</div>
-                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ last_activity.location }}</div>
-                        </div>
-                    </div>
-                </div>
+        <!-- Filter Form -->
+        <form method="get" action="{% url 'accounts:activity_log' %}" class="mb-4">
+            <label for="filter" class="block text-lg">Filter logs:</label>
+            <select name="filter" id="filter" onchange="this.form.submit()" class="form-select mt-2 w-full p-2 border border-gray-300 rounded-md">
+                <option value="all" {% if request.GET.filter == 'all' %}selected{% endif %}>All Logs</option>
+                <option value="auth" {% if request.GET.filter == 'auth' %}selected{% endif %}>Auth-based Logs</option>
+                <option value="activity" {% if request.GET.filter == 'activity' %}selected{% endif %}>Activity-based Logs</option>
+            </select>
+        </form>
 
-                <!-- Last Login Time -->
-                <div class="p-4 bg-gray-50 rounded-lg dark:bg-gray-700">
-                    <div class="flex items-center">
-                        <div class="inline-flex flex-shrink-0 justify-center items-center w-8 h-8 text-purple-500 bg-purple-100 rounded-lg dark:bg-purple-800 dark:text-purple-200">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="ml-3">
-                            <div class="text-sm font-medium text-gray-900 dark:text-white">Last Login</div>
-                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ last_activity.timestamp }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% else %}
-            <div class="p-4 text-sm text-blue-800 bg-blue-50 rounded-lg dark:bg-gray-700 dark:text-blue-400">
-                <i class="fas fa-info-circle mr-2"></i>No login information available.
-            </div>
-            {% endif %}
+        <!-- Download Logs Button -->
+        <div class="mb-4">
+            <a href="{% url 'accounts:activity_log' %}?export=csv&filter={{ filter_type }}" class="btn btn-primary mt-3 inline-block p-2 bg-blue-600 text-white rounded-md">Download Logs as CSV</a>
         </div>
 
-        <!-- Activity Timeline -->
-        <div class="p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800">
-            <h3 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">
-                <i class="fas fa-history mr-2"></i>Recent Activity
-            </h3>
-
-            {% if activity_logs %}
-            <ol class="relative border-l border-gray-200 dark:border-gray-700">
-                {% for log in activity_logs %}
-                <li class="mb-10 ml-4">
-                    <span class="absolute flex items-center justify-center w-4 h-4 bg-blue-100 rounded-full -left-2 ring-4 ring-white dark:ring-gray-800 dark:bg-blue-900">
-                        <i class="fas fa-link text-blue-800 dark:text-blue-300 text-xs"></i>
-                    </span>
-                    <div class="items-center justify-between p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:flex dark:bg-gray-700 dark:border-gray-600">
-                        <time class="mb-1 text-xs font-normal text-gray-400 sm:order-last sm:mb-0">{{ log.timestamp }}</time>
-                        <div class="text-sm font-normal text-gray-500 dark:text-gray-300">Visited <span class="font-semibold text-blue-600 dark:text-blue-400">{{ log.url_visited }}</span></div>
-                    </div>
-                </li>
+        <!-- Last Attempts Table -->
+        <h4 class="text-xl font-semibold mb-4">Last Attempts</h4>
+        <table class="table-auto w-full border-collapse" id="logTable">
+            <thead class="bg-gray-200">
+                <tr>
+                    <th class="p-2 text-left">IP Address</th>
+                    <th class="p-2 text-left">Location</th>
+                    <th class="p-2 text-left">Attempt Type</th>
+                    <th class="p-2 text-left">HTTP Status</th>
+                    <th class="p-2 text-left">Date and Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for attempt in last_attempts %}
+                    <tr class="border-b">
+                        <td class="p-2">{{ attempt.ip_address }}</td>
+                        <td class="p-2">{{ attempt.location }}</td>
+                        <td class="p-2">{{ attempt.attempt_type }}</td>
+                        <td class="p-2 {% if attempt.http_status == '200 OK' %}bg-green-200{% else %}bg-red-200{% endif %}">
+                            {{ attempt.http_status }}
+                        </td>
+                        <td class="p-2">{{ attempt.timestamp|date:"Y-m-d H:i:s" }}</td>
+                    </tr>
                 {% endfor %}
-            </ol>
-            {% else %}
-            <div class="p-4 text-sm text-gray-500 bg-gray-50 rounded-lg dark:bg-gray-700 dark:text-gray-400">
-                <i class="fas fa-info-circle mr-2"></i>No activity recorded yet.
-            </div>
-            {% endif %}
+            </tbody>
+        </table>
+
+        <!-- Pagination Controls -->
+        <div id="paginationControls" class="pagination-controls mt-4 flex justify-center gap-2">
         </div>
+
+        <!-- Button to toggle the dropdown for last visited URLs -->
+        <button id="toggle-urls" class="btn btn-secondary mt-4 bg-gray-600 text-white py-2 px-4 rounded-md">Toggle Last Visited URLs</button>
+
+        <!-- Collapsible section for last visited URLs -->
+        <div id="urls-dropdown" class="hidden mt-4">
+            <h4 class="text-xl font-semibold">Last Visited URLs</h4>
+            <ul class="list-group" id="url-visited-list">
+                {% for log in url_visited %}
+                    <li class="list-group-item p-2 bg-gray-100 mb-2">
+                        {{ log.url_visited }} - <em>{{ log.timestamp|date:"Y-m-d H:i:s" }}</em>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item p-2">No URLs visited.</li>
+                {% endfor %}
+            </ul>
+
+            <div id="url-pagination-controls" class="mt-4 flex justify-center gap-4">
+                <button id="prev-page" class="p-2 bg-blue-500 text-white rounded-md" disabled>Previous</button>
+                <span id="page-indicator" class="self-center text-lg"></span>
+                <button id="next-page" class="p-2 bg-blue-500 text-white rounded-md">Next</button>
+            </div>
+        </div>
+
+        
     </div>
-</div>
+
+    <!-- Back to Top Button -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top fixed bottom-4 right-4 p-3 rounded-full bg-blue-600 text-white"><i class="bi bi-arrow-up"></i></a>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@1.6.2/dist/flowbite.min.js"></script>
+
+    <!-- Your JavaScript -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const rowsPerPage = 20;
+            const table = document.getElementById("logTable");
+            const rows = table.querySelectorAll("tbody tr");
+            const totalRows = rows.length;
+            const totalPages = Math.ceil(totalRows / rowsPerPage);
+            const paginationControls = document.getElementById("paginationControls");
+
+            let currentPage = 1;
+
+            function displayPage(page) {
+                const start = (page - 1) * rowsPerPage;
+                const end = start + rowsPerPage;
+
+                rows.forEach((row, index) => {
+                    row.style.display = index >= start && index < end ? "" : "none";
+                });
+
+                currentPage = page;
+                updatePaginationControls();
+            }
+
+            function updatePaginationControls() {
+                paginationControls.innerHTML = "";
+
+                if (totalPages > 1) {
+                    for (let i = 1; i <= totalPages; i++) {
+                        const pageButton = document.createElement("button");
+                        pageButton.innerText = i;
+                        pageButton.className = "px-3 py-1 border border-gray-300 rounded-md bg-white";
+                        pageButton.classList.toggle("font-bold", i === currentPage);
+                        pageButton.addEventListener("click", () => displayPage(i));
+                        paginationControls.appendChild(pageButton);
+                    }
+                }
+            }
+
+            displayPage(1); // Display the first page on load
+        });
+
+        document.getElementById('toggle-urls').onclick = function() {
+            var dropdown = document.getElementById('urls-dropdown');
+            dropdown.style.display = (dropdown.style.display === 'none') ? 'block' : 'none';
+        };
+
+        const itemsPerPage = 5;
+        const listItems = document.querySelectorAll('#url-visited-list .list-group-item');
+        const totalPages = Math.ceil(listItems.length / itemsPerPage);
+        let currentPage = 1;
+
+        function showPage(page) {
+            listItems.forEach((item, index) => {
+                item.style.display = (index >= (page - 1) * itemsPerPage && index < page * itemsPerPage) ? 'block' : 'none';
+            });
+        }
+
+        function createPaginationControls() {
+            const paginationControls = document.getElementById('url-pagination-controls');
+            paginationControls.innerHTML = '';
+
+            for (let i = 1; i <= totalPages; i++) {
+                const pageLink = document.createElement('a');
+                pageLink.href = '#';
+                pageLink.innerText = i;
+                pageLink.className = "text-blue-500";
+                pageLink.style.margin = '0 5px';
+                pageLink.onclick = (e) => {
+                    e.preventDefault();
+                    currentPage = i;
+                    showPage(currentPage);
+                    highlightCurrentPage();
+                };
+                paginationControls.appendChild(pageLink);
+            }
+        }
+
+        showPage(currentPage);
+        createPaginationControls();
+    </script>
+
 {% endblock %}

@@ -58,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'accounts.middleware.UserActivityMiddleware',
+    'accounts.middleware.TimezoneMiddleware_',
 ]
 
 ROOT_URLCONF = 'CyberSec4OT.urls'

@@ -3,6 +3,9 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from education.models import *
+from django.conf import settings
+from django.utils import timezone
+import requests
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -97,8 +100,33 @@ class Reminder(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 class UserActivityLog(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    #user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     ip_address = models.GenericIPAddressField()
-    location = models.CharField(max_length=255)
+    attempt_type = models.CharField(max_length=50, default='Unknown')  
+    http_status = models.CharField(max_length=50, default='200 OK')    # e.g., '200 OK' or '401 Unauthorized'
     url_visited = models.URLField()
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True)  
+    location = models.CharField(max_length=255, default='Unknown')
+    ticket = models.ForeignKey('Ticket', on_delete=models.SET_NULL, null=True, blank=True)
+
+
+class IPReputation(models.Model):
+    ip_address = models.GenericIPAddressField()
+    reputation_score = models.IntegerField(default=0)
+    category = models.CharField(max_length=255, default="unknown")
+    location = models.CharField(max_length=255, default='')
+
+
+
+def get_ip_reputation(ip_address):
+    api_key = "e8be876d469e663bea2f363f30c5bbd497d03fe6768489b63baf8195bd4352cc"
+    url = f"https://www.virustotal.com/api/v3/ip_addresses/{ip_address}"
+    headers = {"x-apikey": api_key}
+
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return None
