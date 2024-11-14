@@ -88,25 +88,54 @@
         </div>
     </section>
 
-    <!-- Testimonial Section -->
-    <section class="bg-white dark:bg-gray-900">
-      <div class="max-w-screen-xl px-4 py-8 mx-auto text-center lg:py-16 lg:px-6">
-          <figure class="max-w-screen-md mx-auto">
-              <svg class="h-12 mx-auto mb-3 text-gray-400 dark:text-gray-600" viewBox="0 0 24 27" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M14.017 18L14.017 10.609C14.017 4.905 17.748 1.039 23 0L23.995 2.151C21.563 3.068 20 5.789 20 8H24V18H14.017ZM0 18V10.609C0 4.905 3.748 1.038 9 0L9.996 2.151C7.563 3.068 6 5.789 6 8H9.983L9.983 18L0 18Z" fill="currentColor"/>
-              </svg> 
-              <blockquote>
-                  <p class="text-2xl font-medium text-gray-900 dark:text-white">"CyberSec4OT is just awesome. It contains tons of educational resources and courses starting from awareness to advanced training. Perfect choice for your next cybersecurity journey."</p>
-              </blockquote>
-              <figcaption class="flex items-center justify-center mt-6 space-x-3">
-                  <img class="w-6 h-6 rounded-full" src="{% static 'images/pp.jpg' %}" alt="profile picture">
-                  <div class="flex items-center divide-x-2 divide-gray-500 dark:divide-gray-700">
-                      <div class="pr-3 font-medium text-gray-900 dark:text-white">Micheal Gough</div>
-                      <div class="pl-3 text-sm font-light text-gray-500 dark:text-gray-400">CEO at Google</div>
-                  </div>
-              </figcaption>
-          </figure>
-      </div>
+    <!-- Side-by-side Testimonials Section -->
+    <section class="bg-white dark:bg-gray-900 py-16">
+        <div class="max-w-screen-xl mx-auto px-4">
+            <div class="grid md:grid-cols-2 gap-12">
+                <!-- First testimonial -->
+                <div class="bg-gray-50 dark:bg-gray-800 p-8 rounded-lg">
+                    <svg class="h-12 mb-4 text-gray-400 dark:text-gray-600" viewBox="0 0 24 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M14.017 18L14.017 10.609C14.017 4.905 17.748 1.039 23 0L23.995 2.151C21.563 3.068 20 5.789 20 8H24V18H14.017ZM0 18V10.609C0 4.905 3.748 1.038 9 0L9.996 2.151C7.563 3.068 6 5.789 6 8H9.983L9.983 18L0 18Z" fill="currentColor"/>
+                    </svg> 
+                    <blockquote>
+                        <p class="text-xl font-medium text-gray-900 dark:text-white mb-4">"CyberSec4OT is just awesome. It contains tons of educational resources and courses starting from awareness to advanced training. Perfect choice for your next cybersecurity journey."</p>
+                    </blockquote>
+                    <figcaption class="flex items-center mt-6">
+                        <img class="w-10 h-10 rounded-full mr-4" src="{% static 'images/pp.jpg' %}" alt="profile picture">
+                        <div>
+                            <div class="font-medium text-gray-900 dark:text-white">Micheal Gough</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">CEO at Google</div>
+                        </div>
+                    </figcaption>
+                </div>
+
+                <!-- Second testimonial -->
+                <div class="bg-gray-50 dark:bg-gray-800 p-8 rounded-lg">
+                    <svg class="h-12 mb-4 text-gray-400 dark:text-gray-600" viewBox="0 0 24 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M14.017 18L14.017 10.609C14.017 4.905 17.748 1.039 23 0L23.995 2.151C21.563 3.068 20 5.789 20 8H24V18H14.017ZM0 18V10.609C0 4.905 3.748 1.038 9 0L9.996 2.151C7.563 3.068 6 5.789 6 8H9.983L9.983 18L0 18Z" fill="currentColor"/>
+                    </svg> 
+                    <blockquote>
+                        <p class="text-xl font-medium text-gray-900 dark:text-white mb-4">"Hi, I'm Vince! Let's chat about your amazing ideas and projects."</p>
+                        <p class="text-lg text-gray-600 dark:text-gray-400 mb-4">"I enjoy translating your thoughts to our diversely skilled team for the best results"</p>
+                    </blockquote>
+                    <figcaption class="flex items-center mt-6 mb-6">
+                        <img class="w-10 h-10 rounded-full mr-4" src="{% static 'images/pp.jpg' %}" alt="profile picture">
+                        <div>
+                            <div class="font-medium text-gray-900 dark:text-white">Vince</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">Project Manager</div>
+                        </div>
+                    </figcaption>
+                    <div class="mt-4">
+                        <a href="mailto:cyberotsec@gmail.com" class="inline-flex items-center px-6 py-3 text-base font-medium text-gray-900 border-2 border-gray-900 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 dark:border-gray-400 dark:text-gray-400 dark:hover:bg-gray-800">
+                            <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 20 17" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M3.57124 2.54607C3.70936 2.5159 3.85283 2.5 4 2.5H16C16.1472 2.5 16.2906 2.5159 16.4288 2.54607L14.3415 4.37242L10 8.17123L3.57124 2.54607ZM2.08938 3.90698C2.03129 4.09436 2 4.29352 2 4.5V12.5C2 12.6512 2.01678 12.7985 2.04859 12.9401L5.25259 9.33564L6.74741 10.6644L3.41517 14.4131C3.60016 14.4696 3.79653 14.5 4 14.5H16C16.2035 14.5 16.3998 14.4696 16.5848 14.4131L13.2526 10.6644L14.7474 9.33564L17.9514 12.9401C17.9832 12.7985 18 12.6512 18 12.5V4.5C18 4.29352 17.9687 4.09436 17.9106 3.90698L15.6585 5.87758L10.6585 10.2526L10 10.8288L9.3415 10.2526L2.08938 3.90698ZM4 0.5C1.79086 0.5 0 2.29086 0 4.5V12.5C0 14.7091 1.79086 16.5 4 16.5H16C18.2091 16.5 20 14.7091 20 12.5V4.5C20 2.29086 18.2091 0.5 16 0.5H4Z" fill="currentColor" fill-rule="evenodd"/>
+                            </svg>
+                            Contact Us
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 </div>
 {% endblock %}

@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: django_db
+      POSTGRES_USER: django_user
+      POSTGRES_PASSWORD: django_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    environment:
+      DATABASE_URL: postgres://django_user:django_password@db:5432/django_db
+      AUTH_USER: django_user
+      AUTH_PASSWORD: django_password
+    ports:
+      - "6432:6432"  # PgBouncer listens on port 6432
+    depends_on:
+      - db
+    volumes:
+      - ./pgbouncer/pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini
+      - ./pgbouncer/userlist.txt:/etc/pgbouncer/userlist.txt
+
+  web:
+    build:
+      context: .
+    command: python manage.py runserver 0.0.0.0:15576
+    volumes:
+      - .:/app
+    ports:
+      - "15576:15576"
+    depends_on:
+      - pgbouncer
+    environment:
+      - DEBUG=1
+      - DATABASE_NAME=django_db
+      - DATABASE_USER=django_user
+      - DATABASE_PASSWORD=django_password
+      - DATABASE_HOST=pgbouncer
+      - DATABASE_PORT=6432
+
+volumes:
+  postgres_data:

@@ -25,6 +25,7 @@ urlpatterns = [
     path('request-demo/', views.request_demo_view, name='request_demo'),
     path('faq_for_all/', FAQForAllView.as_view(), name='faq_for_all'),
     path('about/', views.about_view, name='about'),  # URL pattern for the about page
+    path('contact/', views.contact, name='contact'),
     # URL pattern for the request demo page
     path('enroll-individual/', views.enroll_individual_view, name='enroll_individual'),
     # URL pattern for enrolling for individual plan

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
 from django.contrib import messages
 from django.contrib.auth.models import User
 from .forms import CustomUserCreationForm, TicketForm, TicketResponseForm
@@ -381,3 +381,37 @@ def base_view(request):
     notifications = Notification.objects.filter(user=request.user, is_read=False)
     reminders = Reminder.objects.filter(user=request.user)
     return {'notifications': notifications, 'reminders': reminders}
+
+def login_view(request):
+    if request.method == 'POST':
+        # Verify reCAPTCHA
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        data = {
+            'secret': '6LdpXVsqAAAAAOQsUZcpCcEY5CGO90lOdF_GJH-P',  # Your secret key
+            'response': recaptcha_response
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        result = r.json()
+        
+        if not result['success']:
+            messages.error(request, 'Please complete the reCAPTCHA.')
+            return render(request, 'login.html')
+        
+        # Continue with your existing login logic
+
+def register_view(request):
+    if request.method == 'POST':
+        # Verify reCAPTCHA
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        data = {
+            'secret': '6LdpXVsqAAAAAOQsUZcpCcEY5CGO90lOdF_GJH-P',
+            'response': recaptcha_response
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        result = r.json()
+        
+        if not result['success']:
+            messages.error(request, 'Please complete the reCAPTCHA.')
+            return redirect('register')
+            
+        # Continue with your existing registration logic

@@ -35,3 +35,28 @@ class FAQForAllView(TemplateView):
 def about_view(request):
     # Logic for rendering the about page goes here
     return render(request, 'about.html')
+
+from django.core.mail import send_mail
+from django.shortcuts import redirect
+from django.contrib import messages
+from django.views.decorators.http import require_POST
+
+@require_POST
+def contact(request):
+    email = request.POST.get('email')
+    subject = request.POST.get('subject')
+    message = request.POST.get('message')
+    
+    try:
+        send_mail(
+            subject=f"Contact Form: {subject}",
+            message=f"From: {email}\n\n{message}",
+            from_email=email,
+            recipient_list=['admin@cybersec4ot.com'],
+            fail_silently=False,
+        )
+        messages.success(request, 'Your message has been sent successfully!')
+    except Exception as e:
+        messages.error(request, 'There was an error sending your message. Please try again later.')
+    
+    return redirect(request.META.get('HTTP_REFERER', '/')) 

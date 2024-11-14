@@ -3,10 +3,28 @@ from django.contrib.auth.decorators import login_required
 from django.db import models
 from .models import *
 from django.contrib import messages
+from django.db.models import Count
 
 @login_required
 def user_dashboard(request):
-    return render(request, 'user_dashboard.html')
+    enrolled_courses = Course.objects.filter(enrolled_users=request.user)
+    
+    # Get the first tag from database for now
+    first_tag = Tag.objects.first()  # Assuming you have a Tag model
+    recommended_courses = Course.objects.filter(tags=first_tag)[:10] if first_tag else []
+    
+    best_selling_courses = Course.objects.annotate(
+        enrolled_count=Count('enrolled_users', distinct=True)
+    ).order_by('-enrolled_count', 'name')[:10]
+    
+    context = {
+        'enrolled_courses': enrolled_courses,
+        'recommended_courses': recommended_courses,
+        'recommended_tag': first_tag,
+        'best_selling_courses': best_selling_courses,
+        'user': request.user,
+    }
+    return render(request, 'user_dashboard.html', context)
 
 @login_required
 def owned_courses(request):
@@ -82,30 +100,29 @@ def available_courses(request):
     difficulty = request.GET.get('difficulty', '')
 
     # Initial course query including owned courses
-    owned_courses = Course.objects.filter(id__in=owned_ids)
+    available_courses = Course.objects.exclude(id__in=owned_ids)
 
     # Apply search query
     if query:
-        owned_courses = owned_courses.filter(name__icontains=query)
+        available_courses = available_courses.filter(name__icontains=query)
 
     # Apply difficulty filter
     if difficulty:
-        owned_courses = owned_courses.filter(difficulty=difficulty)
+        available_courses = available_courses.filter(difficulty=difficulty)
 
     # Apply tag filter
     if selected_tags:
-        owned_courses = owned_courses.filter(tags__in=selected_tags).distinct()
+        available_courses = available_courses.filter(tags__in=selected_tags).distinct()
 
     # Apply ordering
     if ordering == 'course_recent_to_old':
-        owned_courses = owned_courses.order_by('-id')
+        available_courses = available_courses.order_by('-id')
     else:
-        owned_courses = owned_courses.order_by('id')
+        available_courses = available_courses.order_by('id')
 
     all_tags = Tag.objects.all()  # Get all available tags
 
-    return render(request, 'available_courses.html', {'available_courses': owned_courses, 'all_tags': all_tags})
-
+    return render(request, 'available_courses.html', {'available_courses': available_courses, 'all_tags': all_tags})
 @login_required
 def filter_owned_courses(request):
     query = request.GET.get('q', '').strip().lower()  # Keeping query search logic intact
@@ -148,43 +165,26 @@ def filter_owned_courses(request):
 
 @login_required
 def filter_available_courses(request):
-    query = request.GET.get('q', '').strip().lower()  # Keeping query search logic intact
-    ordering = request.GET.get('ordering', 'course_old_to_recent')
-    tags = request.GET.getlist('tags[]')
-    difficulty = request.GET.get('difficulty', 'course_all')
-
-    # Fetch courses owned by the user
-    owned_ids = Enrollment.objects.filter(user=request.user).values_list('course_id', flat=True)
-    courses = Course.objects.exclude(id__in=owned_ids)
-
-    # Apply search query filter
+    query = request.GET.get('q', '')
+    ordering = request.GET.get('ordering', '')
+    difficulty = request.GET.get('difficulty', '')
+    tags = request.GET.getlist('tags', [])
+    
+    courses = Course.objects.all()
+    
     if query:
         courses = courses.filter(name__icontains=query)
-
-    # Apply difficulty filter
-    difficulty_map = {
-        'course_easy': 'easy',
-        'course_medium': 'medium',
-        'course_hard': 'hard',
-        'easy': 'easy',   # Allow flexibility in parameter names
-        'medium': 'medium',
-        'hard': 'hard',
-    }
-    if difficulty in difficulty_map:
-        courses = courses.filter(difficulty=difficulty_map[difficulty])
-
-    # Apply tags filter
+    if difficulty and difficulty != 'all':
+        courses = courses.filter(difficulty=difficulty)
     if tags:
-        courses = courses.filter(tags__in=tags).distinct()
-
-    # Apply ordering filter
-    if ordering == 'recent_to_old':
-        courses = courses.order_by('-id')
-    else:
-        courses = courses.order_by('id')
-
-    # Render the course list HTML and return it as a partial
-    return render(request, 'course_filter.html', {'courses': courses})
+        courses = courses.filter(tags__id__in=tags).distinct()
+    if ordering:
+        if ordering == 'old_to_recent':
+            courses = courses.order_by('created_at')
+        elif ordering == 'recent_to_old':
+            courses = courses.order_by('-created_at')
+            
+    return render(request, 'education/course_list_partial.html', {'available_courses': courses})
 
 @login_required
 def filter_courses(request):

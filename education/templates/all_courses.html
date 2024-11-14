@@ -124,21 +124,28 @@
     <section class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
         <div id="course-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {% for course in all_courses %}
-            <a href="{% url 'education:course_page' course.slug %}" class="flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
-                {% if course.image %}
-                    <img class="object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg" src="{{ course.image.url }}" alt="{{ course.name }}">
-                {% else %}
-                    <img class="object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg" src="{% static 'images/default_course_image.jpg' %}" alt="Default image">
-                {% endif %}
-                <div class="flex flex-col justify-between p-4 leading-normal">
-                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ course.name }}</h5>
-                    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                        Difficulty: {{ course.difficulty }}<br>
-                        Type: {{ course.type }}<br>
-                        Lessons: {{ course.total_contents }}
-                    </p>
+            <div class="group relative bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 cursor-pointer"
+                 onclick="window.location.href='/courses/{{ course.slug }}';"
+                 style="min-height: 200px;">
+                <div class="h-full">
+                    <div class="flex flex-col md:flex-row">
+                        {% if course.image %}
+                            <img class="object-cover w-full rounded-t-lg h-48 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg" src="{{ course.image.url }}" alt="{{ course.name }}">
+                        {% else %}
+                            <img class="object-cover w-full rounded-t-lg h-48 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg" src="{% static 'images/default_course_image.jpg' %}" alt="Default image">
+                        {% endif %}
+                        <div class="flex flex-col justify-between p-4 leading-normal flex-grow">
+                            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ course.name }}</h5>
+                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                Difficulty: {{ course.difficulty }}<br>
+                                Type: {{ course.type }}<br>
+                                Lessons: {{ course.total_contents }}<br>
+                                Points: {{ course.points }}
+                            </p>
+                        </div>
+                    </div>
                 </div>
-            </a>
+            </div>
             {% empty %}
             <div class="col-md-12">
                 <p class="text-gray-700 dark:text-gray-400">No courses found.</p>

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Availabe Courses{% endblock %}
+{% block title %}Available Courses{% endblock %}
 
 {% block content %}
 <div class="p-6">
@@ -124,21 +124,34 @@
     <section class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
         <div id="course-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {% for course in available_courses %}
-            <a href="{% url 'education:course_page' course.slug %}" class="flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
-                {% if course.image %}
-                    <img class="object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg" src="{{ course.image.url }}" alt="{{ course.name }}">
-                {% else %}
-                    <img class="object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg" src="{% static 'images/default_course_image.jpg' %}" alt="Default image">
-                {% endif %}
-                <div class="flex flex-col justify-between p-4 leading-normal">
-                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ course.name }}</h5>
-                    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                        Difficulty: {{ course.difficulty }}<br>
-                        Type: {{ course.type }}<br>
-                        Lessons: {{ course.total_contents }}
-                    </p>
+            <div class="group relative bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 cursor-pointer"
+                 onclick="window.location.href='/courses/{{ course.slug }}';"
+                 style="min-height: 200px;">
+                <div class="h-full">
+                    <div class="flex flex-col md:flex-row">
+                        {% if course.image %}
+                            <img class="object-cover w-full rounded-t-lg h-48 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg" src="{{ course.image.url }}" alt="{{ course.name }}">
+                        {% else %}
+                            <img class="object-cover w-full rounded-t-lg h-48 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg" src="{% static 'images/default_course_image.jpg' %}" alt="Default image">
+                        {% endif %}
+                        <div class="flex flex-col justify-between p-4 leading-normal flex-grow">
+                            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ course.name }}</h5>
+                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                Difficulty: {{ course.difficulty }}<br>
+                                Type: {{ course.type }}<br>
+                                Lessons: {{ course.total_contents }}<br>
+                                Points: {{ course.points }}
+                            </p>
+                        </div>
+                    </div>
                 </div>
-            </a>
+                <div class="absolute bottom-0 right-0 p-4">
+                    <button onclick="event.stopPropagation(); showModal('{{ course.slug }}', '{{ course.points }}')" 
+                            class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center inline-flex items-center dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800">
+                        Enroll Course
+                    </button>
+                </div>
+            </div>
             {% empty %}
             <div class="col-md-12">
                 <p class="text-gray-700 dark:text-gray-400">No courses found.</p>
@@ -186,6 +199,32 @@
     </nav>
 </div>
 
+<!-- Modal -->
+<div id="popup-modal" tabindex="-1" class="hidden fixed inset-0 z-50 flex items-center justify-center w-full h-full bg-black bg-opacity-50">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <button type="button" class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" onclick="hideModal()">
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                </svg>
+                <span class="sr-only">Close modal</span>
+            </button>
+            <div class="p-4 md:p-5 text-center">
+                <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                </svg>
+                <h3 id="modal-message" class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400"></h3>
+                <button id="enroll-button" data-modal-hide="popup-modal" type="button" class="text-white bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
+                    Enroll
+                </button>
+                <button onclick="hideModal()" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-red-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!--  filtering script -->
 <script>
@@ -207,9 +246,9 @@
 
         // Perform AJAX request to filter courses
         $.ajax({
-            url: '{% url "education:filter_available_courses" %}',  // Ensure this URL matches your view name
+            url: '{% url "education:filter_available_courses" %}',  // Updated URL reference
             data: {
-                'q': query,  // Commented for now, but ready for future use
+                'q': query,
                 'ordering': ordering,
                 'tags': selectedTags,
                 'difficulty': difficulty
@@ -244,6 +283,18 @@
         // Trigger filtering when tag checkboxes are selected or deselected
         $('#dropdownTag input[type=checkbox]').on('change', filterCourses);
     });
+
+    function showModal(courseId, points) {
+        document.getElementById('modal-message').textContent = `Are you sure you want to enroll in this course for ${points} points?`;
+        document.getElementById('enroll-button').onclick = function() {
+            window.location.href = `/courses/${courseId}/enroll/`;  // Direct URL format
+        };
+        document.getElementById('popup-modal').classList.remove('hidden');
+    }
+
+    function hideModal() {
+        document.getElementById('popup-modal').classList.add('hidden');
+    }
 
 </script>
 

@@ -21,6 +21,7 @@ from . import views
 app_name = "education"
 
 urlpatterns = [
+    path('courses/filter/', views.filter_available_courses, name='filter_available_courses'),
     path('dashboard/', views.user_dashboard, name='user_dashboard'),
     path('courses/', views.all_courses, name='all_courses'),
     path('courses/available/', views.available_courses, name='available_courses'),
@@ -36,5 +37,6 @@ urlpatterns = [
     path('my-badges/', views.my_badges, name='my_badges'),
     path('my-certificates/', views.my_certificates, name='my_certificates'),
     path('paths/', views.paths, name='paths'),
+    path('course/<slug:slug>/', views.course_page, name='course_detail'),
 
 ]
