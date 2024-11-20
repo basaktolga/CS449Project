@@ -13,6 +13,9 @@ def user_dashboard(request):
     first_tag = Tag.objects.first()  # Assuming you have a Tag model
     recommended_courses = Course.objects.filter(tags=first_tag)[:10] if first_tag else []
     
+    # Get trending courses
+    trending_courses = Course.objects.filter(trendingcourse__isnull=False).order_by('trendingcourse__display_order')
+    
     best_selling_courses = Course.objects.annotate(
         enrolled_count=Count('enrolled_users', distinct=True)
     ).order_by('-enrolled_count', 'name')[:10]
@@ -22,6 +25,7 @@ def user_dashboard(request):
         'recommended_courses': recommended_courses,
         'recommended_tag': first_tag,
         'best_selling_courses': best_selling_courses,
+        'trending_courses': trending_courses,
         'user': request.user,
     }
     return render(request, 'user_dashboard.html', context)

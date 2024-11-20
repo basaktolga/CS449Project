@@ -178,6 +178,72 @@
         </div>
     </section>
 
+    <!-- Trending Courses Section -->
+    <section class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-6">
+        <h3 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+            Trending Courses 
+            <span class="text-purple-600 dark:text-purple-400">🔥</span>
+        </h3>
+        <div class="relative">
+            <div class="overflow-x-auto whitespace-nowrap scroll-smooth" id="trending-slider">
+                <div class="flex gap-4">
+                    {% for course in trending_courses %}
+                    <div class="w-72 flex-shrink-0 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                        <a href="{% url 'education:course_page' course.slug %}">
+                            {% if course.image %}
+                                <img class="p-4 rounded-t-lg w-full h-48 object-cover" src="{{ course.image.url }}" alt="{{ course.name }}" />
+                            {% else %}
+                                <img class="p-4 rounded-t-lg w-full h-48 object-cover" src="{% static 'images/default_course_image.jpg' %}" alt="Default course image" />
+                            {% endif %}
+                        </a>
+                        <div class="px-5 pb-5">
+                            <a href="{% url 'education:course_page' course.slug %}">
+                                <h5 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ course.name }}</h5>
+                            </a>
+                            <div class="flex items-center mt-2.5 mb-5">
+                                <div class="flex items-center space-x-1 rtl:space-x-reverse">
+                                    {% for i in "12345"|make_list %}
+                                        {% if forloop.counter <= course.average_rating %}
+                                            <svg class="w-4 h-4 text-yellow-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+                                                <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+                                            </svg>
+                                        {% else %}
+                                            <svg class="w-4 h-4 text-gray-200 dark:text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+                                                <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+                                            </svg>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ms-3">{{ course.average_rating|floatformat:1 }}</span>
+                            </div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-lg font-bold text-gray-900 dark:text-white truncate mr-2">{{ course.description|truncatewords:10 }}</span>
+                            </div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-lg font-bold text-green-600 dark:text-green-400 whitespace-nowrap">{{ course.points }} points</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                {% if course in user.enrolled_courses.all %}
+                                    <a href="{% url 'education:course_page' course.slug %}" class="w-full text-white bg-green-600 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-500 dark:hover:bg-green-700 dark:focus:ring-green-800">View Course</a>
+                                {% else %}
+                                    <a href="{% url 'education:course_page' course.slug %}" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Enroll Now</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-600 dark:text-gray-400">No trending courses found.</p>
+                    {% endfor %}
+                </div>
+            </div>
+            <button id="trending-slide-left" class="absolute left-0 top-1/2 transform -translate-y-1/2 px-4 py-2 bg-purple-600 text-white rounded-full focus:outline-none hidden hover:bg-purple-700">
+                &#10094;
+            </button>
+            <button id="trending-slide-right" class="absolute right-0 top-1/2 transform -translate-y-1/2 px-4 py-2 bg-purple-600 text-white rounded-full focus:outline-none hover:bg-purple-700">
+                &#10095;
+            </button>
+        </div>
+    </section>
 
     <!-- Best Sellers Section -->
     <section class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-6">
@@ -411,5 +477,43 @@
 
     // Initial state
     updateRecommendedArrows();
+
+    // Sliding functionality for trending courses
+    const trendingSlider = document.getElementById('trending-slider');
+    const trendingLeftArrow = document.getElementById('trending-slide-left');
+    const trendingRightArrow = document.getElementById('trending-slide-right');
+
+    function updateTrendingArrows() {
+        if (trendingSlider.scrollLeft === 0) {
+            trendingLeftArrow.classList.add('hidden');
+        } else {
+            trendingLeftArrow.classList.remove('hidden');
+        }
+
+        if (trendingSlider.scrollLeft + trendingSlider.clientWidth >= trendingSlider.scrollWidth) {
+            trendingRightArrow.classList.add('hidden');
+        } else {
+            trendingRightArrow.classList.remove('hidden');
+        }
+    }
+
+    trendingLeftArrow.addEventListener('click', () => {
+        trendingSlider.scrollBy({
+            left: -scrollAmount,
+            behavior: 'smooth'
+        });
+    });
+
+    trendingRightArrow.addEventListener('click', () => {
+        trendingSlider.scrollBy({
+            left: scrollAmount,
+            behavior: 'smooth'
+        });
+    });
+
+    trendingSlider.addEventListener('scroll', updateTrendingArrows);
+
+    // Initial state
+    updateTrendingArrows();
 </script>
 {% endblock %}

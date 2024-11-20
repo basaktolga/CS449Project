@@ -161,4 +161,14 @@ class Path(models.Model):
     points = models.PositiveIntegerField()  # Points required to unlock
     image = models.ImageField(upload_to='static/paths', blank=True, null=True)  # Assumes ImageField will be used
 
+class TrendingCourse(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    display_order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['display_order']
+
+    def __str__(self):
+        return f"{self.course.name} (Order: {self.display_order})"
+
 
