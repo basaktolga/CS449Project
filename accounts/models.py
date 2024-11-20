@@ -4,8 +4,11 @@ from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from education.models import *
 from django.conf import settings
-from django.utils import timezone
 import requests
+from django.utils import timezone
+from datetime import timedelta
+import random
+import string
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -64,6 +67,40 @@ class Profile(models.Model):
             self.save()
             return True
         return False
+    
+
+class VerificationCode(models.Model):
+    ACTION_CHOICES = [
+        ('change_password', 'Change Password'),
+        ('delete_account', 'Delete Account'),
+    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    code = models.CharField(max_length=6)
+    action = models.CharField(max_length=20, choices=ACTION_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True)
+    data = models.JSONField(null=True, blank=True)
+
+    @classmethod
+    def create_verification(cls, user, action, data=None):
+        """Class method to safely create a verification code"""
+        if not user.pk:
+            raise ValueError("User must be saved before creating verification code")
+            
+        code = ''.join(random.choices(string.digits, k=6))
+        verification = cls(
+            user=user,
+            code=code,
+            action=action,
+            data=data
+        )
+        verification.save()
+        return verification
+
+    def is_valid(self):
+        return timezone.now() < self.created_at + timedelta(minutes=10)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.action}"
     
 # Ticket model for the ticketing system
 class Ticket(models.Model):

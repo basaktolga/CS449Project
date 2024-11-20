@@ -372,3 +372,9 @@ RECAPTCHA_SECRET_KEY = RECAPTCHA_KEYS['login']['secret_key']
 SILENCED_SYSTEM_CHECKS = ['django_recaptcha.recaptcha_test_key_error']  #Django project is using the test keys for Google reCAPTCHA, 
                                                                         #which is suitable for development but not recommended for production
                                                                         #Therefore ignore the error messages for now
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
