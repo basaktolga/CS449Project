@@ -10,8 +10,16 @@ def addclass(field, class_attr):
 
 @register.filter(name='get_id_field')
 def get_id_field(field):
-    parse = field.auto_id.split("_")
-    return parse[-1]
+    try:
+        if hasattr(field, 'auto_id'):
+            parse = field.auto_id.split("_")
+            try:
+                return int(parse[-1])
+            except (ValueError, TypeError):
+                return None
+        return None
+    except (AttributeError, IndexError):
+        return None
 
 
 @register.simple_tag

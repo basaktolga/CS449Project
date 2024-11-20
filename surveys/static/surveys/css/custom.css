@@ -18,3 +18,20 @@
     margin: revert;
     padding: revert;
 }
+
+/* Add these styles */
+input[name$="_other"] {
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+input[name$="_other"]:disabled {
+    background-color: #f3f4f6;
+    cursor: not-allowed;
+}
+
+/* Add this to ensure proper alignment */
+.flex-grow {
+    flex-grow: 1;
+}

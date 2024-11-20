@@ -5,6 +5,7 @@ from surveys.widgets import InlineChoiceField
 from tinymce.widgets import TinyMCE
 from surveys.app_settings import SURVEY_TINYMCE_DEFAULT_CONFIG
 from surveys.app_settings import field_validators
+from surveys.models import Answer, TYPE_FIELD, UserAnswer, Question
 
 
 class QuestionForm(forms.ModelForm):
@@ -18,12 +19,14 @@ class QuestionWithChoicesForm(forms.ModelForm):
     
     class Meta:
         model = Question
-        fields = ['label', 'key', 'choices', 'help_text', 'required']
+        fields = ['label', 'key', 'choices', 'help_text', 'required', 'include_other']
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['choices'].widget = InlineChoiceField()
         self.fields['choices'].help_text = _("Click Button Add to adding choice")
+        if self.instance and self.instance.type_field != TYPE_FIELD.radio:
+            self.fields['include_other'].widget = forms.HiddenInput()
 
 
 class QuestionFormRatings(forms.ModelForm):

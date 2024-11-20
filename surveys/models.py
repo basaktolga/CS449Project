@@ -125,6 +125,11 @@ class Question(BaseModel):
                                    help_text=_("If True, the user must provide an answer to this question."))
     ordering = models.PositiveIntegerField(_("choices"), default=0,
                                            help_text=_("Defines the question order within the surveys."))
+    include_other = models.BooleanField(
+        _("include other option"), 
+        default=True,
+        help_text=_("If True, adds an 'Other' option with text input for radio buttons")
+    )
 
     class Meta:
         verbose_name = _("question")

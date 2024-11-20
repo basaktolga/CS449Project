@@ -1,9 +1,15 @@
 {% if widget.wrap_label %}
     <label{% if widget.attrs.id %} for="{{ widget.attrs.id }}"{% endif %} class="flex items-center text-sm py-1">
 {% endif %}
-        <input type="{{ widget.type }}" name="{{ widget.name }}"{% if widget.value != None %} value="{{ widget.value }}"{% endif %}{% include "django/forms/widgets/attrs.html" %}
+        <input type="{{ widget.type }}" name="{{ widget.name }}"{% if widget.value != None %} value="{{ widget.value }}"{% endif %}{% if widget.attrs.data_has_other %}data-has-other="true"{% endif %}{% include "django/forms/widgets/attrs.html" %}
             class="w-6 h-6 border-gray-200">
-        <span class="ml-3 font-medium">{{ widget.choice_label }}</span>
-{% if widget.wrap_label %} {{ widget.label }}
+        <div class="ml-3 font-medium flex-grow">
+            {% if widget.attrs.data_has_other %}
+                {{ widget.choice_label }}
+            {% else %}
+                {{ widget.label }}
+            {% endif %}
+        </div>
+{% if widget.wrap_label %}
     </label>
 {% endif %}
