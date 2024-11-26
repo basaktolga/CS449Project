@@ -24,6 +24,7 @@ urlpatterns = [
     path('', views.home_view, name='home'),
     path('request-demo/', views.request_demo_view, name='request_demo'),
     path('faq_for_all/', FAQForAllView.as_view(), name='faq_for_all'),
+    path('faq/', views.faq, name='faq'),  # URL pattern for faq
     path('about/', views.about_view, name='about'),  # URL pattern for the about page
     path('contact/', views.contact, name='contact'),
     # URL pattern for the request demo page
@@ -34,5 +35,5 @@ urlpatterns = [
     path('surveys/', include('surveys.urls')),
     path('', include("accounts.urls")),
     path('', include("payment.urls")),
-    path('faq/', views.faq, name='faq'),  # URL pattern for faq
+    
 ]

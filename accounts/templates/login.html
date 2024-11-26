@@ -1,10 +1,10 @@
-{% extends "base.html" %}
+{% extends "base_unauth.html" %}
 
 {% block title %}Login{% endblock %}
 
 {% block content %}
-<div class="max-w-md mx-auto mt-10 p-8 bg-white rounded-lg shadow-lg dark:bg-gray-800">
-    <h2 class="text-2xl font-bold mb-5 text-center text-gray-800 dark:text-white">Login</h2>
+<div class="max-w-md mx-auto mt-10 p-8 bg-white rounded-lg shadow-lg dark:bg-gray-900">
+    <h2 class="text-2xl font-bold mb-5 text-center text-gray-900 dark:text-white">Login</h2>
 
     {% if messages %}
         {% for message in messages %}

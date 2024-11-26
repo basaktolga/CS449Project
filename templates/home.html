@@ -4,7 +4,7 @@
 {% block title %}Home{% endblock %}
 
 <!-- Add this before block content -->
-{% block precontent %}
+{% block content %}
 <!-- Hero/Jumbotron Section -->
 <section class="relative bg-center bg-no-repeat bg-cover -mx-4 mt-[-1.5rem]" style="background-image: url('{% static "images/nodes4.jpg" %}')">
     <div class="absolute inset-0 bg-black opacity-70"></div>
@@ -138,11 +138,4 @@
         </div>
     </section>
 </div>
-{% endblock %}
-
-{% block footer %}
-<!-- Footer -->
-<footer class="relative z-10 bg-gray-200 dark:bg-gray-800 text-center py-4 mt-8">
-    &copy; 2024 CyberSec4OT. All rights reserved.
-</footer>
 {% endblock %}
