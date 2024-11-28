@@ -22,6 +22,7 @@ db.sqlite3
 /education/__pycache__
 /education/__pycache__
 *.pyc
-/pycache/*
+*/pycache/*
+*/*/pycache/*
 *.py[cod]
 */*.py[cod]
