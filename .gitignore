@@ -1,14 +1,13 @@
 node_modules/
 myenv/
 accounts/__pycache__/
-*/accounts/__pycache__/*.pyc
-accounts/migrations/
-CyberSec4OT/__pycache__/
-CyberSec4OT/migrations/
+accounts/pycache/*
+education/pycache/*
+payment/pycache/*
+surveys/pycache/*
+CyberSec4OT/pycache/*
 education/__pycache__/
-education/migrations/
 payment/__pycache__/
-payment/migrations/
 surveys/__pycache__/
 surveys/migrations/
 surveys/admins/__pycache__/
@@ -22,3 +21,5 @@ db.sqlite3
 *.pyc
 /education/__pycache__
 /education/__pycache__
+*.pyc
+/pycache/*
