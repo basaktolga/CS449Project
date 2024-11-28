@@ -152,51 +152,7 @@ class PathAdmin(admin.ModelAdmin):
     list_display = ('name', 'difficulty', 'type', 'lessons', 'duration', 'points')
     search_fields = ('name', 'description', 'type')
     list_filter = ('difficulty', 'type')
-"""
-class TicketAdminForm(forms.ModelForm):
-    #response_text = forms.CharField(widget=forms.Textarea, required=False, label='Admin Response')
-    #response_text = forms.CharField(widget=forms.Textarea, required=False, label='Admin Response', max_length=None)
-    response_text = models.TextField(blank=True, null=True)  
 
-    class Meta:
-        model = Ticket
-        fields = '__all__'
-        exclude = ('responses',)  # Exclude responses from being edited directly in the form
-
-class TicketAdmin(admin.ModelAdmin):
-    form = TicketAdminForm
-    list_display = ('user', 'title', 'category', 'status', 'topic', 'date_updated')
-    search_fields = ('user__username', 'title', 'status', 'topic')
-    
-    def get_readonly_fields(self, request, obj=None):
-        if obj:  # If object exists (i.e., it's not a new object)
-            return ('date_created', 'date_updated', 'topic', 'responses')
-        return ('date_created', 'date_updated')
-
-    def save_model(self, request, obj, form, change):
-        if change:  # If the object is being changed (not created)
-            response_text = form.cleaned_data.get('response_text')
-            if response_text:
-                username = request.user.username  # Get the username
-                # Append the new response
-                if obj.responses:
-                    obj.responses += f'\n\n<strong>{username}: {response_text} - {timezone.now().strftime("%Y-%m-%d %H:%M:%S")}'  # Removed (Admin) from here
-                else:
-                    obj.responses = f'<strong>{username}: {response_text}'  # Removed (Admin) from here
-        super().save_model(request, obj, form, change)
-
-    fieldsets = (
-        (None, {
-            'fields': ('user', 'title', 'status', 'topic', 'attachment' , 'response_text')
-        }),
-        ('Dates', {
-            'classes': ('collapse',),
-            'fields': ('date_created', 'date_updated')
-        }),
-    )
-
-admin.site.register(Ticket, TicketAdmin)
-"""
 
 
 class TicketAdminForm(forms.ModelForm):
