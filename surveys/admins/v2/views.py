@@ -36,7 +36,10 @@ class AdminCreateQuestionView(ContextTitleMixin, CreateView):
     def get_form_class(self):
         choices = [TYPE_FIELD.multi_select, TYPE_FIELD.select, TYPE_FIELD.radio]
         if self.type_field_id in choices:
-            return QuestionWithChoicesForm
+            form = QuestionWithChoicesForm
+            if self.type_field_id != TYPE_FIELD.radio:
+                form.Meta.exclude = ['include_other']
+            return form
         elif self.type_field_id == TYPE_FIELD.rating:
             return QuestionFormRatings
         elif self.type_field_id == TYPE_FIELD.email:
@@ -112,7 +115,10 @@ class AdminUpdateQuestionView(ContextTitleMixin, UpdateView):
     def get_form_class(self):
         choices = [TYPE_FIELD.multi_select, TYPE_FIELD.select, TYPE_FIELD.radio]
         if self.type_field_id in choices:
-            return QuestionWithChoicesForm
+            form = QuestionWithChoicesForm
+            if self.type_field_id != TYPE_FIELD.radio:
+                form.Meta.exclude = ['include_other']
+            return form
         elif self.type_field_id == TYPE_FIELD.rating:
             return QuestionFormRatings
         elif self.type_field_id == TYPE_FIELD.email:

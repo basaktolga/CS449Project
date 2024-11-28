@@ -44,10 +44,15 @@ class BaseSurveyForm(forms.Form):
                 )
             elif question.type_field == TYPE_FIELD.radio:
                 choices = make_choices(question)
+                if question.include_other:
+                    choices.append(('other', _('Other')))
+
                 self.fields[field_name] = forms.ChoiceField(
-                    choices=choices, label=question.label,
-                    widget=RadioSelectSurvey
+                    choices=choices, 
+                    label=question.label,
+                    widget=RadioSelectSurvey(include_other=question.include_other)
                 )
+
             elif question.type_field == TYPE_FIELD.select:
                 choices = make_choices(question)
                 empty_choice = [("", _("Choose"))]
@@ -133,16 +138,20 @@ class BaseSurveyForm(forms.Form):
 
     def clean(self):
         cleaned_data = super().clean()
-
-        for field_name in self.field_names:
-            try:
-                field = cleaned_data[field_name]
-            except KeyError:
-                raise forms.ValidationError("You must enter valid data")
-
-            if self.fields[field_name].required and not field:
-                self.add_error(field_name, 'This field is required')
-
+        
+        # Check each radio field that might have an "other" option
+        for field_name, field in self.fields.items():
+            if isinstance(field, forms.ChoiceField) and isinstance(field.widget, RadioSelectSurvey):
+                field_value = cleaned_data.get(field_name)
+                if field_value == 'other':
+                    # Get the corresponding other text value
+                    other_text = self.data.get(f'{field_name}_other')
+                    if not other_text:
+                        self.add_error(field_name, _('Please specify other option'))
+                    else:
+                        # Replace 'other' with the actual text in cleaned_data
+                        cleaned_data[field_name] = other_text
+        
         return cleaned_data
 
 
@@ -151,20 +160,25 @@ class CreateSurveyForm(BaseSurveyForm):
     @transaction.atomic
     def save(self):
         cleaned_data = super().clean()
-
-        user_answer = UserAnswer.objects.create(
-            survey=self.survey, user=self.user
-        )
+        user_answer = UserAnswer.objects.create(survey=self.survey, user=self.user)
+        
         for question in self.questions:
             field_name = f'field_survey_{question.id}'
-
-            if question.type_field == TYPE_FIELD.multi_select:
-                value = ",".join(cleaned_data[field_name])
+            
+            if question.type_field == TYPE_FIELD.radio and question.include_other:
+                value = cleaned_data[field_name]
+                if value == 'other':
+                    self.add_error(field_name, _('Please specify other option'))
             else:
                 value = cleaned_data[field_name]
-
+                
+            if question.type_field == TYPE_FIELD.multi_select:
+                value = ",".join(value)
+                
             Answer.objects.create(
-                question=question, value=value, user_answer=user_answer
+                question=question,
+                value=value,
+                user_answer=user_answer
             )
 
         if self.survey.notification_to and SURVEY_EMAIL_FROM:

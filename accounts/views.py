@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
 from django.contrib import messages
 from django.contrib.auth.models import User
 from .forms import CustomUserCreationForm, TicketForm, TicketResponseForm
@@ -17,7 +17,19 @@ from .models import UserActivityLog
 from .utils import get_client_ip, get_geolocation, get_ip_reputation
 from django.http import HttpResponse
 import csv
-from django.utils.timezone import now
+from django.utils import timezone
+from datetime import timedelta
+from .models import VerificationCode
+import random
+import string
+from django.core.mail import send_mail
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth import update_session_auth_hash
+from .decorators import rate_limit_verification_codes
+from django.utils.decorators import method_decorator
+from django.core.cache import cache
+from datetime import datetime
+from .mixins import RateLimitMixin
 
 
 def register(request):
@@ -47,36 +59,149 @@ def register(request):
         form = CustomUserCreationForm()
     return render(request, "register.html", {"form": form})
 
-
-
-
-class CustomPasswordChangeView(PasswordChangeView):
+class CustomPasswordChangeView(RateLimitMixin, PasswordChangeView):
     template_name = 'settings.html'
-    success_url = reverse_lazy('accounts:settings')  # Redirect to the 'settings' page after success
+    success_url = reverse_lazy('accounts:verify_action')
 
     def form_valid(self, form):
-        messages.success(self.request, "Your password has been changed successfully.", extra_tags='success settings-related')
-        return super().form_valid(form)
+        if not self.check_rate_limit():
+            return redirect('accounts:settings')
+
+        try:
+            # Create verification code using the class method
+            verification = VerificationCode.create_verification(
+                user=self.request.user,
+                action='change_password',
+                data={'new_password_hash': make_password(form.cleaned_data['new_password1'])}
+            )
+
+            # Send the code to user's email
+            send_mail(
+                'Your Verification Code',
+                f'Your verification code is {verification.code}',
+                'cyberotsec@gmail.com',
+                [self.request.user.email],
+                fail_silently=False,
+            )
+
+            messages.info(self.request, "A verification code has been sent to your email.")
+            return redirect('accounts:verify_action')
+        except Exception as e:
+            messages.error(self.request, f"Error creating verification code: {str(e)}")
+            return redirect('accounts:settings')
+
+    def form_invalid(self, form):
+        for field, errors in form.errors.items():
+            for error in errors:
+                messages.error(self.request, error, extra_tags='error settings-related')
+        return super().form_invalid(form)
 
 @login_required
+@rate_limit_verification_codes
 def delete_account(request):
     if request.method == 'POST':
         password = request.POST.get('delete_password')
-        confirm_password = request.POST.get('confirm_delete_password')
+        confirm_delete = request.POST.get('confirm_delete')
 
-        if password and password == confirm_password:
+        if confirm_delete == 'DELETE MY ACCOUNT':
             user = request.user
             if user.check_password(password):
-                user.delete()
-                messages.success(request, "Your account has been deleted successfully.", extra_tags='success settings-related')
-                return redirect('accounts:login')  # Redirect to the home page or another page after deletion
+                try:
+                    # Create verification code using the class method
+                    verification = VerificationCode.create_verification(
+                        user=user,
+                        action='delete_account'
+                    )
+
+                    # Send the code to user's email
+                    send_mail(
+                        'Your Verification Code',
+                        f'Your verification code is {verification.code}',
+                        'cyberotsec@gmail.com',
+                        [user.email],
+                        fail_silently=False,
+                    )
+
+                    messages.info(request, "A verification code has been sent to your email.")
+                    return redirect('accounts:verify_action')
+                except Exception as e:
+                    messages.error(request, f"Error creating verification code: {str(e)}", 
+                                 extra_tags='error settings-related')
+                    return redirect('accounts:settings')
             else:
                 messages.error(request, "Incorrect password.", extra_tags='error settings-related')
         else:
-            messages.error(request, "Passwords do not match.", extra_tags='error settings-related')
-    
+            messages.error(request, "Please type 'DELETE MY ACCOUNT' to confirm.", 
+                         extra_tags='error settings-related')
     return render(request, 'settings.html')
 
+@login_required
+def verify_action(request):
+    if request.method == 'POST':
+        code_input = request.POST.get('code')
+        user = request.user
+
+        try:
+            # First check if there's any valid verification code for this user
+            verification = VerificationCode.objects.filter(
+                user=user,
+                code=code_input
+            ).first()
+
+            if not verification:
+                messages.error(request, "Invalid verification code.", extra_tags='error settings-related')
+                return render(request, 'verify_action.html')
+
+            if verification.is_valid():
+                action = verification.action
+
+                if action == 'change_password':
+                    try:
+                        # Get the new password hash from verification.data
+                        new_password_hash = verification.data.get('new_password_hash')
+                        if not new_password_hash:
+                            messages.error(request, "Password data not found.", extra_tags='error settings-related')
+                            return render(request, 'verify_action.html')
+
+                        # Update password
+                        user.password = new_password_hash
+                        user.save()
+
+                        # Delete verification code after successful password change
+                        verification.delete()
+
+                        messages.success(request, "Your password has been changed successfully.")
+                        update_session_auth_hash(request, user)
+                        return redirect('accounts:settings')
+
+                    except Exception as e:
+                        messages.error(request, f"Error changing password: {str(e)}", extra_tags='error settings-related')
+                        return render(request, 'verify_action.html')
+
+                elif action == 'delete_account':
+                    try:
+                        # Delete verification code first
+                        verification.delete()
+                        
+                        # Then delete user
+                        user.delete()
+                        messages.success(request, "Your account has been deleted successfully.", extra_tags='success settings-related')
+                        return redirect('accounts:login')
+
+                    except Exception as e:
+                        messages.error(request, f"Error deleting account: {str(e)}", extra_tags='error settings-related')
+                        return render(request, 'verify_action.html')
+
+                else:
+                    messages.error(request, "Invalid action.", extra_tags='error settings-related')
+            else:
+                messages.error(request, "Verification code has expired.", extra_tags='error settings-related')
+                verification.delete()
+                
+        except Exception as e:
+            messages.error(request, f"An error occurred: {str(e)}", extra_tags='error settings-related')
+
+    return render(request, 'verify_action.html')
 
 @login_required
 def send_ticket(request):
@@ -550,3 +675,76 @@ def base_view(request):
     notifications = Notification.objects.filter(user=request.user, is_read=False)
     reminders = Reminder.objects.filter(user=request.user)
     return {'notifications': notifications, 'reminders': reminders}
+
+def login_view(request):
+    if request.method == 'POST':
+        # Verify reCAPTCHA
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        data = {
+            'secret': '6LdpXVsqAAAAAOQsUZcpCcEY5CGO90lOdF_GJH-P',  # Your secret key
+            'response': recaptcha_response
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        result = r.json()
+        
+        if not result['success']:
+            messages.error(request, 'Please complete the reCAPTCHA.')
+            return render(request, 'login.html')
+        
+        # Continue with your existing login logic
+
+def register_view(request):
+    if request.method == 'POST':
+        # Verify reCAPTCHA
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        data = {
+            'secret': '6LdpXVsqAAAAAOQsUZcpCcEY5CGO90lOdF_GJH-P',
+            'response': recaptcha_response
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        result = r.json()
+        
+        if not result['success']:
+            messages.error(request, 'Please complete the reCAPTCHA.')
+            return redirect('register')
+            
+        # Continue with your existing registration logic
+
+@login_required
+@rate_limit_verification_codes
+def resend_verification_code(request):
+    if request.method == 'POST':
+        user = request.user
+        try:
+            # Get the existing verification code
+            verification = VerificationCode.objects.filter(user=user).latest('created_at')
+            
+            if not verification:
+                messages.error(request, "No verification process in progress.", extra_tags='error')
+                return redirect('accounts:settings')
+
+            # Create new verification code
+            new_verification = VerificationCode.create_verification(
+                user=user,
+                action=verification.action,
+                data=verification.data
+            )
+
+            # Delete old verification code
+            verification.delete()
+
+            # Send the new code
+            send_mail(
+                'Your New Verification Code',
+                f'Your new verification code is {new_verification.code}',
+                'cyberotsec@gmail.com',
+                [user.email],
+                fail_silently=False,
+            )
+
+            messages.success(request, "A new verification code has been sent to your email.")
+            
+        except Exception as e:
+            messages.error(request, f"Error sending new verification code: {str(e)}", extra_tags='error')
+            
+    return redirect('accounts:verify_action')

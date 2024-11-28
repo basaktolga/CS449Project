@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="max-w-md mx-auto mt-10 p-8 bg-white rounded-lg shadow-lg dark:bg-gray-800">
+<div class="max-w-md mx-auto mt-10 p-8 bg-white rounded-lg shadow-lg dark:bg-gray-900">
     <h2 class="text-2xl font-bold mb-5 text-center text-gray-800 dark:text-white">Account Settings</h2>
 
     <!-- Display Success Messages -->
@@ -81,10 +81,10 @@
             <input type="password" id="delete_password" name="delete_password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
         </div>
 
-        <!-- Confirm Password Field for Account Deletion -->
+        <!-- Confirmation Input Field -->
         <div class="mb-6">
-            <label for="confirm_delete_password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm Password</label>
-            <input type="password" id="confirm_delete_password" name="confirm_delete_password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
+            <label for="confirm_delete" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Type 'DELETE MY ACCOUNT' to confirm</label>
+            <input type="text" id="confirm_delete" name="confirm_delete" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
         </div>
 
         <button type="submit" class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm w-full px-5 py-2.5 text-center dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-700">Delete Account</button>

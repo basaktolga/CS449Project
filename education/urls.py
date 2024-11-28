@@ -23,6 +23,7 @@ from django.conf.urls.static import static
 app_name = "education"
 
 urlpatterns = [
+    path('courses/filter/', views.filter_available_courses, name='filter_available_courses'),
     path('dashboard/', views.user_dashboard, name='user_dashboard'),
     path('courses/', views.all_courses, name='all_courses'),
     path('courses/available/', views.available_courses, name='available_courses'),
@@ -44,6 +45,7 @@ urlpatterns = [
     
     path('certificate_detail/<uuid:user_certificate_id>/', views.certificate_detail, name='certificate_detail'),
 
+    path('course/<slug:slug>/', views.course_page, name='course_detail'),
 
 ]
 

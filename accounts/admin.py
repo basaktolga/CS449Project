@@ -361,3 +361,10 @@ class IPReputationAdmin(admin.ModelAdmin):
 
 # Register your models here
 admin.site.register(IPReputation, IPReputationAdmin)
+
+
+class TrendingCourseAdmin(admin.ModelAdmin):
+    list_display = ('course', 'display_order')
+    ordering = ('display_order',)
+
+admin.site.register(TrendingCourse, TrendingCourseAdmin)

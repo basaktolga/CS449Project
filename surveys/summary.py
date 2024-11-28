@@ -181,11 +181,20 @@ class SummaryResponse:
     def _process_radio_type(self, question: Question) -> str:
         pie_chart = ChartPie(chart_id=f"chartpie_{question.id}", chart_name=question.label)
         labels = question.choices.split(",")
+        
+        # Add "Other" to labels if include_other is True
+        if question.include_other:
+            labels.append("Other")
 
         data = []
         for label in labels:
             clean_label = label.strip().replace(' ', '_').lower()
-            count = Answer.objects.filter(question=question, value=clean_label).count()
+            if clean_label == 'other':
+                # Count responses where value is not in the original choices
+                original_choices = [choice.strip().replace(' ', '_').lower() for choice in question.choices.split(",")]
+                count = Answer.objects.filter(question=question).exclude(value__in=original_choices).count()
+            else:
+                count = Answer.objects.filter(question=question, value=clean_label).count()
             data.append(count)
 
         pie_chart.labels = labels

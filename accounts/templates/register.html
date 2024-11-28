@@ -1,10 +1,12 @@
-{% extends "base.html" %}
+{% extends "base_unauth.html" %}
+
+{% block title %}Register{% endblock %}
 
 {% block content %}
-<div class="max-w-md mx-auto mt-10 p-8 bg-white rounded-lg shadow-lg dark:bg-gray-800">
+<div class="max-w-md mx-auto mt-10 p-8 bg-white rounded-lg shadow-lg dark:bg-gray-900">
     <h2 class="text-2xl font-bold mb-5 text-center text-gray-800 dark:text-white">Register</h2>
 
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" onsubmit="return validateForm(event)">
         {% csrf_token %}
 
         <div class="grid gap-6 mb-6 md:grid-cols-2">
@@ -74,6 +76,11 @@
             {% endif %}
         </div>
 
+        <!-- reCAPTCHA -->
+        <div class="mb-6">
+            <div class="g-recaptcha" data-sitekey="6LdpXVsqAAAAAK94LP4aSOUCEIHU52Plkdt8w65g"></div>
+        </div>
+
         <div class="flex items-start mb-6">
             <div class="flex items-center h-5">
                 <input id="terms" type="checkbox" required class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800">
@@ -84,4 +91,17 @@
         <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Register</button>
     </form>
 </div>
+
+<!-- reCAPTCHA Script -->
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script>
+function validateForm(event) {
+    var response = grecaptcha.getResponse();
+    if (response.length === 0) {
+        alert('Please complete the reCAPTCHA');
+        return false;
+    }
+    return true;
+}
+</script>
 {% endblock %}
