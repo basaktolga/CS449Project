@@ -22,8 +22,11 @@ module.exports = {
     },
   },
   plugins: [
-    require('flowbite/plugin'),
+    require('flowbite/plugin')({
+      wysiwyg: true,
+    }),
     require('@tailwindcss/line-clamp'),
+    require('flowbite-typography'),
   ],
       fontFamily: {
       'body': [

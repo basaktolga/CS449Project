@@ -1,43 +1,92 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}{{ course.name }} - Enrolled{% endblock %}
 
 {% block content %}
-<div class="container mx-auto my-8 p-6 bg-white rounded-lg shadow-lg dark:bg-gray-900">
-    <h1 class="text-3xl font-bold mb-4 text-gray-900 dark:text-white">{{ course.name }}</h1>
-    <p class="mb-6 text-gray-700 dark:text-gray-300">{{ course.description }}</p>
+<div class="container mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4">{{ course.name }}</h1>
 
-    <h2 class="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Contents</h2>
-    
-    <div class="md:flex">
-        <ul class="flex flex-col space-y-4 text-sm font-medium text-gray-500 dark:text-gray-400 md:mr-4 mb-4 md:mb-0">
-            {% for content in course.contents.all %}
-            <li>
-                <button type="button" onclick="toggleContent('content-{{ content.id }}')" class="inline-flex items-center px-4 py-3 rounded-lg hover:text-gray-900 bg-gray-50 hover:bg-gray-100 w-full dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white">
-                    <svg class="w-4 h-4 mr-2 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M18 7.5h-.423l-.452-1.09.3-.3a1.5 1.5 0 0 0 0-2.121L16.01 2.575a1.5 1.5 0 0 0-2.121 0l-.3.3-1.089-.452V2A1.5 1.5 0 0 0 11 .5H9A1.5 1.5 0 0 0 7.5 2v.423l-1.09.452-.3-.3a1.5 1.5 0 0 0-2.121 0L2.576 3.99a1.5 1.5 0 0 0 0 2.121l.3.3L2.423 7.5H2A1.5 1.5 0 0 0 .5 9v2A1.5 1.5 0 0 0 2 12.5h.423l.452 1.09-.3.3a1.5 1.5 0 0 0 0 2.121l1.415 1.413a1.5 1.5 0 0 0 2.121 0l.3-.3 1.09.452V18A1.5 1.5 0 0 0 9 19.5h2a1.5 1.5 0 0 0 1.5-1.5v-.423l1.09-.452.3.3a1.5 1.5 0 0 0 2.121 0l1.415-1.414a1.5 1.5 0 0 0 0-2.121l-.3-.3.452-1.09H18a1.5 1.5 0 0 0 1.5-1.5V9A1.5 1.5 0 0 0 18 7.5Zm-8 6a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z"/>
-                    </svg>
-                    {{ content.title }}
-                </button>
-            </li>
-            {% endfor %}
-        </ul>
+    <!-- Progress Bar -->
+    <div class="mb-6">
+        <div class="flex justify-between mb-1">
+            <span class="text-base font-medium text-teal-600">Progress</span>
+            <span class="text-sm font-medium text-teal-600">70%</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2.5">
+            <div class="bg-teal-600 h-2.5 rounded-full" style="width: 70%"></div>
+        </div>
+    </div>
 
-        <div class="p-6 bg-gray-50 text-medium text-gray-500 dark:text-gray-400 dark:bg-gray-800 rounded-lg w-full">
-            {% for content in course.contents.all %}
-            <div id="content-{{ content.id }}" class="hidden">
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">{{ content.title }}</h3>
-                {% if content.video %}
-                    <video controls class="mb-4 w-full">
-                        <source src="{{ content.video.url }}" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                {% elif content.video_url %}
-                    <iframe src="{{ content.video_url }}" class="mb-4 w-full" frameborder="0" allowfullscreen></iframe>
-                {% endif %}
-                <p>{{ content.content_data|safe }}</p>
+    <!-- Flex Container for Content and Navigation -->
+    <div class="md:flex md:space-x-8 mb-8">
+        <!-- Content Display Area -->
+        <div class="flex-grow mb-6 md:mb-0">
+            <h2 class="text-xl font-semibold mb-4">Course Content</h2>
+            <div class="w-full h-auto rounded-lg overflow-hidden shadow-md">
+                {% for content in course.contents.all %}
+                <div id="content-{{ content.id }}" class="hidden w-full">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">{{ content.title }}</h3>
+                    {% if content.video %}
+                        <div class="aspect-w-16 aspect-h-9 mb-4">
+                            <video controls class="w-full">
+                                <source src="{{ content.video.url }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                    {% elif content.video_url %}
+                        <div class="aspect-w-16 aspect-h-9 mb-4">
+                            <iframe src="{{ content.video_url }}" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                    {% endif %}
+                    <div class="prose dark:prose-invert max-w-none">
+                        {{ content.content_data|safe }}
+                    </div>
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
+        </div>
+
+        <!-- Course Topics Navigation -->
+        <div class="md:w-1/4 md:pl-4 flex-shrink-0">
+            <h2 class="text-xl font-semibold mb-4">Course Topics</h2>
+            <ul class="flex flex-col space-y-4 text-sm font-medium text-gray-500 dark:text-gray-400">
+                {% for content in course.contents.all %}
+                <li>
+                    <button type="button" 
+                            onclick="toggleContent('content-{{ content.id }}')" 
+                            class="inline-flex items-center px-4 py-3 rounded-lg hover:text-gray-900 bg-gray-50 hover:bg-gray-100 w-full dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white">
+                        <svg class="w-4 h-4 mr-2 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M18 7.5h-.423l-.452-1.09.3-.3a1.5 1.5 0 0 0 0-2.121L16.01 2.575a1.5 1.5 0 0 0-2.121 0l-.3.3-1.089-.452V2A1.5 1.5 0 0 0 11 .5H9A1.5 1.5 0 0 0 7.5 2v.423l-1.09.452-.3-.3a1.5 1.5 0 0 0-2.121 0L2.576 3.99a1.5 1.5 0 0 0 0 2.121l.3.3L2.423 7.5H2A1.5 1.5 0 0 0 .5 9v2A1.5 1.5 0 0 0 2 12.5h.423l.452 1.09-.3.3a1.5 1.5 0 0 0 0 2.121l1.415 1.413a1.5 1.5 0 0 0 2.121 0l.3-.3 1.09.452V18A1.5 1.5 0 0 0 9 19.5h2a1.5 1.5 0 0 0 1.5-1.5v-.423l1.09-.452.3.3a1.5 1.5 0 0 0 2.121 0l1.415-1.414a1.5 1.5 0 0 0 0-2.121l-.3-.3.452-1.09H18a1.5 1.5 0 0 0 1.5-1.5V9A1.5 1.5 0 0 0 18 7.5Z"/>
+                        </svg>
+                        {{ content.title }}
+                    </button>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Notes and Codepad Tabs -->
+    <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
+        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-tab" data-tabs-toggle="#default-tab-content" role="tablist">
+            <li class="me-2" role="presentation">
+                <button class="inline-block p-4 border-b-2 rounded-t-lg" id="notes-tab" data-tabs-target="#notes" type="button" role="tab" aria-controls="notes" aria-selected="true">Notes</button>
+            </li>
+            <li class="me-2" role="presentation">
+                <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="codepad-tab" data-tabs-target="#codepad" type="button" role="tab" aria-controls="codepad" aria-selected="false">Codepad</button>
+            </li>
+        </ul>
+    </div>
+    <div id="default-tab-content">
+        <!-- Notes Section with TipTap Editor -->
+        <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="notes" role="tabpanel" aria-labelledby="notes-tab">
+            {% include "wysiwyg_editor.html" %}
+            <div id="editor" class="block w-full px-0 text-sm text-gray-800 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400 min-h-[200px]"></div>
+        </div>
+        <!-- Codepad Section -->
+        <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="codepad" role="tabpanel" aria-labelledby="codepad-tab">
+            <textarea id="codepad-editor" class="w-full h-64 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg p-4"></textarea>
         </div>
     </div>
 </div>
@@ -47,12 +96,37 @@
         // Hide all content sections
         const allContents = document.querySelectorAll('[id^="content-"]');
         allContents.forEach(content => content.classList.add('hidden'));
-
-        // Show the clicked content section
+        
+        // Show selected content
         const selectedContent = document.getElementById(contentId);
         if (selectedContent) {
             selectedContent.classList.remove('hidden');
         }
+
+        // Update button styles
+        const allButtons = document.querySelectorAll('button[onclick^="toggleContent"]');
+        allButtons.forEach(button => {
+            button.classList.remove('bg-blue-500', 'text-white');
+            button.classList.add('bg-gray-50', 'dark:bg-gray-800');
+        });
+
+        // Highlight selected button
+        const selectedButton = document.querySelector(`button[onclick*="${contentId}"]`);
+        if (selectedButton) {
+            selectedButton.classList.add('bg-blue-500', 'text-white');
+            selectedButton.classList.remove('bg-gray-50', 'dark:bg-gray-800');
+        }
     }
+
+    // Show first content by default
+    window.addEventListener('load', function() {
+        const firstContent = document.querySelector('[id^="content-"]');
+        if (firstContent) {
+            toggleContent(firstContent.id);
+        }
+    });
 </script>
+
+<!-- Include your TipTap editor initialization script -->
+<script type="module" src="{% static 'js/tiptap-editor.js' %}"></script>
 {% endblock %}
