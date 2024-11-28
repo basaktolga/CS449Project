@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 app_name = "education"
 
@@ -35,6 +37,16 @@ urlpatterns = [
     path('filter/', views.filter_courses, name='filter_courses'),
     path('my-badges/', views.my_badges, name='my_badges'),
     path('my-certificates/', views.my_certificates, name='my_certificates'),
+    
     path('paths/', views.paths, name='paths'),
+    path('certificate-validation/', views.certificate_validation, name='certificate_validation'),
+    #path('certificate/<uuid:cert_id>/', views.certificate_detail, name='certificate_detail'),
+    
+    path('certificate_detail/<uuid:user_certificate_id>/', views.certificate_detail, name='certificate_detail'),
+
 
 ]
+
+
+if settings.DEBUG:  # Serve uploaded files during development
+    urlpatterns += static('/certificates/', document_root='certificates/')

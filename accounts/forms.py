@@ -8,6 +8,7 @@ import bleach
 from .models import Ticket
 import magic 
 import re
+from education.models import Certificate, UserCertificate
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True, validators=[EmailValidator()])
@@ -123,3 +124,17 @@ class TicketForm(forms.ModelForm):
 class TicketResponseForm(forms.Form):
     message = forms.CharField(widget=forms.Textarea, label='Your Response')
     #attachment = forms.FileField(required=False, label='Attach a file')        that part will be modified later, after providing multi file upload (up to 10)
+
+
+
+class CertificateValidationForm(forms.Form):
+    certificate_id = forms.UUIDField(label="Certificate ID")
+
+class UserCertificateForm(forms.ModelForm):
+    # Add a field to choose users
+    user = forms.ModelChoiceField(queryset=User.objects.all(), label="Select User")
+    certificate = forms.ModelChoiceField(queryset=Certificate.objects.all(), label="Select Certificate")
+
+    class Meta:
+        model = UserCertificate
+        fields = ['user', 'certificate',  'expiration_date', 'status']

@@ -1,0 +1,107 @@
+{% extends 'base_unauth.html' %}
+
+{% block title %}Certificate Validation{% endblock %}
+
+{% block content %}
+<div class="certificate-validation">
+    <h2>Certificate Validation</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        <label for="first_name">First Name:</label>
+        <input type="text" id="first_name" name="first_name" required>
+
+        <label for="last_name">Last Name:</label>
+        <input type="text" id="last_name" name="last_name" required>
+
+        <label for="id_user_certification">Certificate ID:</label>
+        <input type="text" id="id_user_certification" name="id_user_certification" required>
+
+        <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Validate Certificate</button>
+    </form>
+
+    {% if valid %}
+        {% if certificate %}
+            <div class="certificate-details">
+                <h3>Certificate Valid!</h3>
+                <p><strong>Certificate Name:</strong> {{ certificate.name }}</p>
+                <p><strong>Issued By:</strong> {{ certificate.issued_by }}</p>
+                <p><strong>Issued Date:</strong> {{ certificate.issued_date }}</p>
+                <p><strong>Expiration Date:</strong> {{ certificate.expiration_date }}</p>
+                <img src="{{ certificate.image.url }}" alt="Certificate Image" class="certificate-image"/>
+            </div>
+        {% endif %}
+    {% else %}
+        <p>Certificate not found or invalid. Please check the details and try again.</p>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block styles %}
+<style>
+    .certificate-validation {
+        padding: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+        font-family: Arial, sans-serif;
+    }
+
+    .certificate-validation form {
+        margin-bottom: 20px;
+    }
+
+    .certificate-validation label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    .certificate-validation input {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .validate-btn {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .validate-btn:hover {
+        background-color: #45a049;
+    }
+
+    .certificate-details {
+        margin-top: 20px;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+    }
+
+    .certificate-details h3 {
+        font-size: 24px;
+        color: green;
+    }
+
+    .certificate-details p {
+        font-size: 18px;
+        margin: 10px 0;
+    }
+
+    .certificate-image {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}

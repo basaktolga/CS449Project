@@ -10,6 +10,24 @@
             <h1 class="text-2xl font-semibold">Activity Log</h1>
         </div>
 
+        <!-- Last Successful Login Section -->
+        <div class="mb-6">
+            <h4 class="text-xl font-semibold">Last Successful Login :</h4>
+            <p>
+                 {{ last_successful_login.ip_address }}  {{ last_successful_login.timestamp|date:"Y-m-d H:i:s" }}
+                 
+            </p>
+        </div>
+
+        <!-- Last Unsuccessful Login Attempt Section -->
+        <div class="mb-6">
+            <h4 class="text-xl font-semibold">Last Unsuccessful Login Attempt :</h4>
+            <p>
+                 {{ last_unsuccessful_login.ip_address }}   {{ last_unsuccessful_login.timestamp|date:"Y-m-d H:i:s" }}
+                
+            </p>
+        </div>
+
        
 
         <!-- Filter Form -->
@@ -92,86 +110,239 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@1.6.2/dist/flowbite.min.js"></script>
 
-    <!-- Your JavaScript -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            // Log table pagination
             const rowsPerPage = 20;
             const table = document.getElementById("logTable");
             const rows = table.querySelectorAll("tbody tr");
             const totalRows = rows.length;
             const totalPages = Math.ceil(totalRows / rowsPerPage);
             const paginationControls = document.getElementById("paginationControls");
-
+    
             let currentPage = 1;
-
+    
             function displayPage(page) {
                 const start = (page - 1) * rowsPerPage;
                 const end = start + rowsPerPage;
-
+    
                 rows.forEach((row, index) => {
                     row.style.display = index >= start && index < end ? "" : "none";
                 });
-
+    
                 currentPage = page;
                 updatePaginationControls();
             }
-
+    
             function updatePaginationControls() {
                 paginationControls.innerHTML = "";
-
+    
                 if (totalPages > 1) {
-                    for (let i = 1; i <= totalPages; i++) {
-                        const pageButton = document.createElement("button");
-                        pageButton.innerText = i;
-                        pageButton.className = "px-3 py-1 border border-gray-300 rounded-md bg-white";
-                        pageButton.classList.toggle("font-bold", i === currentPage);
-                        pageButton.addEventListener("click", () => displayPage(i));
-                        paginationControls.appendChild(pageButton);
+                    // Add first 5 pages
+                    if (currentPage > 5) {
+                        for (let i = 1; i <= 5; i++) {
+                            createPageButton(i);
+                        }
                     }
+    
+                    // Add previous button
+                    if (currentPage > 1) {
+                        createNavButton("Previous", currentPage - 1);
+                    }
+    
+                    // Add pages around current page
+                    for (let i = Math.max(currentPage - 2, 1); i <= Math.min(currentPage + 2, totalPages); i++) {
+                        createPageButton(i);
+                    }
+    
+                    // Add next button
+                    if (currentPage < totalPages) {
+                        createNavButton("Next", currentPage + 1);
+                    }
+    
+                    // Add last 5 pages
+                    if (currentPage < totalPages - 4) {
+                        for (let i = totalPages - 4; i <= totalPages; i++) {
+                            createPageButton(i);
+                        }
+                    }
+    
+                    // Add input box to go to a specific page
+                    createGoToPageInput();
                 }
             }
-
+    
+            function createPageButton(page) {
+                const pageButton = document.createElement("button");
+                pageButton.innerText = page;
+                pageButton.className = "px-3 py-1 border border-gray-300 rounded-md bg-white";
+                pageButton.classList.toggle("font-bold", page === currentPage);
+                pageButton.addEventListener("click", () => displayPage(page));
+                paginationControls.appendChild(pageButton);
+            }
+    
+            function createNavButton(label, page) {
+                const navButton = document.createElement("button");
+                navButton.innerText = label;
+                navButton.className = "px-3 py-1 border border-gray-300 rounded-md bg-white";
+                navButton.addEventListener("click", () => displayPage(page));
+                paginationControls.appendChild(navButton);
+            }
+    
+            function createGoToPageInput() {
+                const goToInputContainer = document.createElement('div');
+                goToInputContainer.className = "inline-flex items-center ml-3";
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.min = 1;
+                input.max = totalPages;
+                input.placeholder = currentPage;
+                input.className = 'px-2 py-1 border border-gray-300 rounded-md';
+                const goButton = document.createElement('button');
+                goButton.innerText = 'Go';
+                goButton.className = 'px-3 py-1 border border-gray-300 rounded-md bg-white';
+                goButton.addEventListener('click', () => {
+                    const page = parseInt(input.value);
+                    if (page >= 1 && page <= totalPages) {
+                        displayPage(page);
+                    }
+                });
+    
+                goToInputContainer.appendChild(input);
+                goToInputContainer.appendChild(goButton);
+                paginationControls.appendChild(goToInputContainer);
+            }
+    
             displayPage(1); // Display the first page on load
-        });
-
-        document.getElementById('toggle-urls').onclick = function() {
-            var dropdown = document.getElementById('urls-dropdown');
-            dropdown.style.display = (dropdown.style.display === 'none') ? 'block' : 'none';
-        };
-
-        const itemsPerPage = 5;
-        const listItems = document.querySelectorAll('#url-visited-list .list-group-item');
-        const totalPages = Math.ceil(listItems.length / itemsPerPage);
-        let currentPage = 1;
-
-        function showPage(page) {
-            listItems.forEach((item, index) => {
-                item.style.display = (index >= (page - 1) * itemsPerPage && index < page * itemsPerPage) ? 'block' : 'none';
-            });
-        }
-
-        function createPaginationControls() {
-            const paginationControls = document.getElementById('url-pagination-controls');
-            paginationControls.innerHTML = '';
-
-            for (let i = 1; i <= totalPages; i++) {
+    
+            // Visited URLs pagination
+            document.getElementById('toggle-urls').onclick = function () {
+                var dropdown = document.getElementById('urls-dropdown');
+                dropdown.style.display = (dropdown.style.display === 'none') ? 'block' : 'none';
+            };
+    
+            const itemsPerPage = 5;
+            const listItems = document.querySelectorAll('#url-visited-list .list-group-item');
+            const totalUrlPages = Math.ceil(listItems.length / itemsPerPage);
+            let currentUrlPage = 1;
+    
+            function showUrlPage(page) {
+                listItems.forEach((item, index) => {
+                    item.style.display = (index >= (page - 1) * itemsPerPage && index < page * itemsPerPage) ? 'block' : 'none';
+                });
+            }
+    
+            function updateUrlInputPlaceholder() {
+                const input = document.querySelector('#url-pagination-controls input');
+                if (input) {
+                    input.placeholder = currentUrlPage;  // Set the placeholder to the current page number
+                }
+            }
+    
+            function createUrlPaginationControls() {
+                const paginationControls = document.getElementById('url-pagination-controls');
+                paginationControls.innerHTML = '';
+    
+                // Add previous button (before the page buttons)
+                if (currentUrlPage > 1) {
+                    createUrlNavButton("Previous", currentUrlPage - 1);
+                }
+    
+                // Add first 5 pages
+                for (let i = 1; i <= 5; i++) {
+                    createUrlPageButton(i);
+                }
+    
+                // Add last 5 pages (always show the last 5 pages, but only if current page is not near them)
+                if (currentUrlPage < totalUrlPages - 4) {
+                    for (let i = totalUrlPages - 4; i <= totalUrlPages; i++) {
+                        createUrlPageButton(i);
+                    }
+                }
+    
+                // Add input box to go to a specific page
+                createUrlGoToPageInput(); // This will now show the current page in the input placeholder
+    
+                // Add next button (just after the go button)
+                if (currentUrlPage < totalUrlPages) {
+                    createUrlNavButton("Next", currentUrlPage + 1);
+                }
+            }
+    
+            function createUrlPageButton(page) {
                 const pageLink = document.createElement('a');
                 pageLink.href = '#';
-                pageLink.innerText = i;
+                pageLink.innerText = page;
                 pageLink.className = "text-blue-500";
                 pageLink.style.margin = '0 5px';
+    
                 pageLink.onclick = (e) => {
                     e.preventDefault();
-                    currentPage = i;
-                    showPage(currentPage);
-                    highlightCurrentPage();
+                    currentUrlPage = page;
+                    showUrlPage(currentUrlPage);
+                    createUrlPaginationControls();
+                    updateUrlInputPlaceholder();  // Update the placeholder when a page number is clicked
                 };
-                paginationControls.appendChild(pageLink);
+    
+                document.getElementById('url-pagination-controls').appendChild(pageLink);
             }
-        }
-
-        showPage(currentPage);
-        createPaginationControls();
+    
+            function createUrlNavButton(label, page) {
+                const navButton = document.createElement("button");
+                navButton.innerText = label;
+                navButton.className = "px-3 py-1 border border-gray-300 rounded-md bg-white";
+    
+                navButton.addEventListener("click", () => {
+                    currentUrlPage = page;
+                    showUrlPage(currentUrlPage);
+                    createUrlPaginationControls();
+                    updateUrlInputPlaceholder();
+                });
+    
+                document.getElementById('url-pagination-controls').appendChild(navButton);
+            }
+    
+            function createUrlGoToPageInput() {
+                const goToInputContainer = document.createElement('div');
+                goToInputContainer.className = "inline-flex items-center ml-3";
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.min = 1;
+                input.max = totalUrlPages;
+                input.placeholder = currentUrlPage; // Set placeholder to current page number
+                input.className = 'px-2 py-1 border border-gray-300 rounded-md';
+    
+                const goButton = document.createElement('button');
+                goButton.innerText = 'Go';
+                goButton.className = 'px-3 py-1 border border-gray-300 rounded-md bg-white';
+    
+                goButton.addEventListener('click', () => {
+                    const page = parseInt(input.value);
+                    if (page >= 1 && page <= totalUrlPages) {
+                        currentUrlPage = page;
+                        showUrlPage(currentUrlPage);
+                        createUrlPaginationControls();
+                    }
+                });
+    
+                goToInputContainer.appendChild(input);
+                goToInputContainer.appendChild(goButton);
+                document.getElementById('url-pagination-controls').appendChild(goToInputContainer);
+            }
+    
+            showUrlPage(currentUrlPage);
+            createUrlPaginationControls();
+        });
     </script>
+    
+    
+    
 
 {% endblock %}
+
+
+
+
+
+ 
+    

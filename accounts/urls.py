@@ -2,6 +2,8 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
 from .views import CustomPasswordChangeView, delete_account, send_ticket, close_ticket
+from django.conf import settings
+from django.conf.urls.static import static
 
 app_name = "accounts"
 
@@ -20,3 +22,6 @@ urlpatterns = [
     path('close_ticket/<int:ticket_id>/', close_ticket, name='close_ticket'),
     #**** Ticket related section end *****
 ]
+
+if settings.DEBUG:  # Serve uploaded files during development
+    urlpatterns += static('/attachments/', document_root='attachments/')

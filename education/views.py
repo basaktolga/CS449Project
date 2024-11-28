@@ -3,6 +3,130 @@ from django.contrib.auth.decorators import login_required
 from django.db import models
 from .models import *
 from django.contrib import messages
+from django.shortcuts import render, get_object_or_404
+from .models import Certificate
+from django.http import HttpResponse
+from accounts.forms import UserCertificateForm
+from django.contrib import messages
+from accounts.forms import CertificateValidationForm
+#from django_ratelimit.decorators import ratelimit
+
+  # Import for rate limiting
+
+# Rate limit applied to allow 5 requests per minute per IP
+#@ratelimit(key='ip', rate='5/m', method='GET', block=True)
+def validate_certificate(request, certificate_id):
+    try:
+        certificate = get_object_or_404(Certificate, certificate_id=certificate_id)
+        return render(request, 'certificate_validation.html', {'certificate': certificate})
+    except Certificate.DoesNotExist:
+        return HttpResponse("Invalid certificate ID", status=404)
+
+
+
+
+def assign_user_certificate(request):
+    if request.method == 'POST':
+        form = UserCertificateForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'User certificate assigned successfully.')
+            return redirect('some_view')  # Replace with the appropriate redirect
+    else:
+        form = UserCertificateForm()
+
+    return render(request, 'accounts/assign_user_certificate.html', {'form': form})
+
+
+"""
+
+def certificate_validation(request):
+    certificate = None
+    valid = False  # Variable to check if certificate is valid
+
+    if request.method == 'POST':
+        # Get the form data from the request
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        user_cert_id = request.POST.get('id_user_certification')
+
+        # Try to find the UserCertificate by first_name, last_name, and user_cert_id
+        try:
+            # Filter the UserCertificate table based on provided details
+            user_certificate = UserCertificate.objects.get(
+                user__first_name=first_name,
+                user__last_name=last_name,
+                certificate__id=user_cert_id
+            )
+            # If found, get the associated certificate
+            certificate = user_certificate.certificate
+            valid = True  # Certificate is valid
+        except UserCertificate.DoesNotExist:
+            valid = False  # Certificate not found or invalid
+
+    return render(request, 'certificate_validation.html', {
+        'certificate': certificate,
+        'valid': valid
+    })
+"""
+
+
+def certificate_validation(request):
+    certificate = None
+    valid = False
+    error_message = None
+
+    if request.method == 'POST':
+        # Get the form data from the request
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        user_cert_id_str = request.POST.get('id_user_certification')
+
+        # Validate if the certificate ID is a valid UUID
+        try:
+            user_cert_id = uuid.UUID(user_cert_id_str)  # Check if the user_cert_id is a valid UUID
+
+            # Now check for UserCertificate entry tied to the provided details (no need for user authentication)
+            try:
+                # Check if the combination of first_name, last_name, and user_certificate_id exists in UserCertificate
+                user_certificate = UserCertificate.objects.get(
+                    first_name=first_name,  # Match against first_name
+                    last_name=last_name,  # Match against last_name
+                    user_certificate_id=user_cert_id  # Match against user_certificate_id
+                )
+                certificate = user_certificate.certificate  # Retrieve the related certificate
+                valid = True  # Mark as valid
+
+            except UserCertificate.DoesNotExist:
+                error_message = "Certificate not found for the given details."
+                valid = False
+
+        except ValueError:
+            error_message = "The Certificate ID is not valid. Please provide a valid UUID."
+            valid = False  # Invalid UUID format
+
+    return render(request, 'certificate_validation.html', {
+        'certificate': certificate,
+        'valid': valid,
+        'error_message': error_message
+    })
+
+
+"""
+def certificate_detail(request, cert_id):
+    certificate = get_object_or_404(Certificate, certificate_id=cert_id)
+    return render(request, 'certificate_detail.html', {'certificate': certificate})
+"""
+def certificate_detail(request, certificate_id):
+    certificate = Certificate.objects.get(id=certificate_id)
+    # Assuming you have a model UserCertificate that links the certificate to the user
+    user_certificate = UserCertificate.objects.get(certificate=certificate, user=request.user)
+    
+    return render(request, 'certificate_detail.html', {
+        'certificate': certificate,
+        'user_certificate': user_certificate,
+    })
+
 
 @login_required
 def user_dashboard(request):
@@ -234,13 +358,30 @@ def my_badges(request):
         'user': request.user,
     })
 
-
+"""
 @login_required
 def my_certificates(request):
     # Render the dashboard template and pass the request.user object
     return render(request, 'my_certificates.html', {
         'user': request.user,
     })
+"""
+
+def my_certificates(request):
+    # Get all UserCertificates for the logged-in user
+    user_certificates = UserCertificate.objects.filter(user=request.user)
+    return render(request, 'my_certificates.html', {
+        'user_certificates': user_certificates
+    })
+
+
+def certificate_detail(request, user_certificate_id):
+    # Get the certificate details using the user_certificate_id
+    certificate = get_object_or_404(UserCertificate, user_certificate_id=user_certificate_id)
+    return render(request, 'certificate_detail.html', {
+        'certificate': certificate
+    })
+
 
 @login_required
 def paths(request):

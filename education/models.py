@@ -3,10 +3,12 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from accounts.models import *
+import uuid
 
 
 
 
+"""
 # Certificate model to store information about certificates
 class Certificate(models.Model):
     name = models.CharField(max_length=100, unique=True)  # Unique name for each certificate
@@ -15,10 +17,68 @@ class Certificate(models.Model):
     expiration_date = models.DateField(null=True, blank=True)  # Optional expiration date
     issued_by = models.CharField(max_length=100)  # Who issued the certificate
     image = models.ImageField(upload_to='certificates/', null=True, blank=True, validators=[FileExtensionValidator(['jpg', 'png', 'jpeg'])])  # Path for storing certificate images
+    certificate_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)  # Unique certificate ID for validation
+
+    def __str__(self):
+        return f"{self.name} - {self.certificate_id}"
+
+"""
+"""
+class Certificate(models.Model):
+    certificate_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)  # Unique identifier for validation
+    first_name = models.CharField(max_length=100, null=True)  # Allow null temporarily
+    last_name = models.CharField(max_length=100, null=True)   # Allow null temporarily
+    name = models.CharField(max_length=100, null=True)         # Allow null temporarily
+    description = models.TextField(null=True)                  # Allow null temporarily  # Course name, for example |  name of the certificate
+    #description = models.TextField()  # Certificate description
+    
+    issued_by = models.CharField(max_length=100)  # Issuer name
+    image = models.ImageField(upload_to='certificates/', null=True, blank=True, validators=[FileExtensionValidator(['jpg', 'png', 'jpeg'])])  # Certificate image
+    issued_date = models.DateField()  # Ensure this field exists
+    expiration_date = models.DateField(null=True, blank=True)  # Ensure this field exists
+    
+    def __str__(self):
+        return f"{self.name} - {self.certificate_id}"
+"""
+class Certificate(models.Model):
+    name = models.CharField(max_length=100, unique=True, null=True)  # Unique name for each certificate
+    description = models.TextField(null=True)
+    issued_date = models.DateField()  # Date the certificate was issued
+    expiration_date = models.DateField(null=True, blank=True)  # Optional expiration date
+    issued_by = models.CharField(max_length=100)  # Who issued the certificate
+    image = models.ImageField(upload_to='certificates/', null=True, blank=True, validators=[FileExtensionValidator(['jpg', 'png', 'jpeg'])])  # Path for storing certificate images
+    
 
     def __str__(self):
         return self.name
+    
+"""
+class UserCertificate(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Link to User model
+    certificate = models.ForeignKey(Certificate, on_delete=models.CASCADE)  # Link to Certificate model
+    issued_date = models.DateField()  # Date the certificate was issued to the user
+    expiration_date = models.DateField(null=True, blank=True)  # Optional expiration date
+    status = models.CharField(max_length=50, choices=[('active', 'Active'), ('expired', 'Expired')], default='active')
 
+    def __str__(self):
+        return f"{self.user.username} - {self.certificate.name}"
+"""
+
+class UserCertificate(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    certificate = models.ForeignKey(Certificate, on_delete=models.CASCADE)
+    user_certificate_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    #user_certificate_id = models.UUIDField(default=uuid.uuid4, editable=False)
+    first_name = models.CharField(max_length=100, null=True)
+    last_name = models.CharField(max_length=100,null=True)
+    start_date = models.DateField(null=True)
+    expiration_date = models.DateField(null=True)
+    status = models.CharField(max_length=50, choices=(('active', 'Active'), ('expired', 'Expired')))
+    issued_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.certificate.name} - {self.user.username} ({self.certificate_id})"
+    
 
 class Badge(models.Model):
     name = models.CharField(max_length=100, unique=True)  # Ensure badge names are unique

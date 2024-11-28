@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Certificate Details{% endblock %}
+{% load static %}
+{% block content %}
+<div class="p-6 bg-gray-50 dark:bg-gray-900">
+    <div class="mb-6">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">Certificate Details</h2>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+        <div class="p-5">
+            <h3 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">{{ certificate.name }}</h3>
+            <p class="mb-3 text-gray-700 dark:text-gray-400">{{ certificate.description }}</p>
+            <p class="mb-3 text-gray-700 dark:text-gray-400">First Name: {{ certificate.first_name }}</p>
+            <p class="mb-3 text-gray-700 dark:text-gray-400">Last Name: {{ certificate.last_name }}</p>
+            <p class="mb-3 text-gray-700 dark:text-gray-400">Certificate ID: {{ certificate.user_certificate_id }}</p>
+            <p class="mb-3 text-gray-700 dark:text-gray-400">Issued Date: {{ certificate.issued_date }}</p>
+            <p class="mb-3 text-gray-700 dark:text-gray-400">Expiration Date: {{ certificate.expiration_date }}</p>
+            <p class="mb-3 text-gray-700 dark:text-gray-400">Issued By: {{ certificate.issued_by }}</p>     
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

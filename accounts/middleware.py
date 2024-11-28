@@ -75,7 +75,9 @@ class UserActivityMiddleware:
 
         # Logout attempt logging
         elif request.method == 'GET' and request.path == '/logout/':
-            if request.user.is_authenticated:
+        
+            #if request.user.is_authenticated:
+            if was_authenticated:  # Log the logout event only if the user was authenticated
                 ip_address = get_client_ip(request)
                 location = get_geolocation(ip_address)
                 UserActivityLog.objects.create(

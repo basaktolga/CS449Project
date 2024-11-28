@@ -17,6 +17,7 @@ from .models import UserActivityLog
 from .utils import get_client_ip, get_geolocation, get_ip_reputation
 from django.http import HttpResponse
 import csv
+from django.utils.timezone import now
 
 
 def register(request):
@@ -45,6 +46,9 @@ def register(request):
     else:
         form = CustomUserCreationForm()
     return render(request, "register.html", {"form": form})
+
+
+
 
 class CustomPasswordChangeView(PasswordChangeView):
     template_name = 'settings.html'
@@ -183,25 +187,26 @@ def close_ticket(request, ticket_id):
 
     else:
         messages.error(request, 'Ticket cannot be closed because it is already closed or does not belong to you.')
-    return redirect('my_tickets')  # Redirect to the my_tickets page after closing the ticket
+    return redirect('accounts:my_tickets')  # Redirect to the my_tickets page after closing the ticket 
 
-
+"""
 def insert_newlines(text, limit=100):
-    """Inserts newlines into the text after a specified character limit."""
+    #Inserts newlines into the text after a specified character limit.
     if not text:
         return text
     return '\n'.join([text[i:i + limit] for i in range(0, len(text), limit)])
-
-
+"""
+"""
 @login_required
 def ticket_detail(request, ticket_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)
 
     # Format the topic directly
-    ticket.topic = insert_newlines(ticket.topic, limit=80)
+    #ticket.topic = insert_newlines(ticket.topic, limit=80)
 
     # Format the responses list directly with newlines
-    responses_list = insert_newlines(ticket.responses, limit=100).splitlines() if ticket.responses else []
+    #responses_list = insert_newlines(ticket.responses, limit=100).splitlines() if ticket.responses else []
+    responses_list = ticket.responses.splitlines() if ticket.responses else []
 
     if request.method == 'POST':
         form = TicketResponseForm(request.POST)
@@ -218,7 +223,8 @@ def ticket_detail(request, ticket_id):
 
             ticket.save()
             # Update the responses list again after saving
-            responses_list = insert_newlines(ticket.responses, limit=120).splitlines()
+            #responses_list = insert_newlines(ticket.responses, limit=300).splitlines()
+            responses_list = ticket.responses.splitlines()
             return redirect('accounts:ticket_detail', ticket_id=ticket.id)
     else:
         form = TicketResponseForm()
@@ -227,6 +233,169 @@ def ticket_detail(request, ticket_id):
         'ticket': ticket,
         'form': form,
         'responses_list': responses_list,
+    })
+
+
+"""
+"""
+
+@login_required
+def ticket_detail(request, ticket_id):
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+
+   
+    responses_list = ticket.responses.splitlines() if ticket.responses else []
+
+    if request.method == 'POST':
+        form = TicketResponseForm(request.POST)
+        if form.is_valid():
+            response_message = form.cleaned_data['message']
+            # Add a formatted response
+            response = f"{request.user.username}: {response_message} - {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+
+            # Append response
+            if not ticket.responses:
+                ticket.responses = response
+            else:
+                ticket.responses += response
+
+            ticket.save()
+            responses_list = ticket.responses.splitlines()
+            return redirect('accounts:ticket_detail', ticket_id=ticket.id)
+    else:
+        form = TicketResponseForm()
+
+    return render(request, 'ticket_detail.html', {
+        'ticket': ticket,
+        'form': form,
+        'responses_list': responses_list,
+    })
+
+"""
+
+from django.utils.timezone import localtime
+from django.utils.html import escape
+
+def insert_newline(text):
+    text = escape(text)
+    return text.replace("\n", "<br>")
+
+@login_required
+def ticket_detail(request, ticket_id):
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    import logging
+    logger = logging.getLogger(__name__)
+
+    logger.debug(f"Raw responses: {ticket.responses}")
+
+
+    admin_responses = []
+    user_responses = []
+
+    # Process the entire responses text as a sequence of messages
+    if ticket.responses:
+        # Assume messages are separated by a special delimiter like '\n\n' or just '\n'
+        messages = ticket.responses.split("\n\n")  # Use double newline to differentiate messages
+        """
+        for message in messages:
+            if ":" not in message or "-" not in message:
+                continue  # Skip malformed entries
+
+            try:
+                username, remainder = message.split(":", 1)
+                text, timestamp = remainder.rsplit(".", 1)
+            except ValueError:
+                continue  # Skip malformed entries
+
+            username = username.strip()
+            text = text.strip()
+            timestamp = timestamp.strip()
+
+            user_obj = User.objects.filter(username=username).first()
+            if user_obj and user_obj.is_superuser:
+                admin_responses.append({
+                    'username': username,
+                    'message': insert_newline(text),
+                    'timestamp': timestamp
+                })
+            elif user_obj:
+                user_responses.append({
+                    'username': username,
+                    'message': insert_newline(text),
+                    'timestamp': timestamp
+                })
+        """
+        
+        for message in messages:
+            logger.debug(f"Processing message: {message}")
+            if ":" in message and "." in message:
+                # Assume the format is: username: message - timestamp
+                try:
+                    username, remainder = message.split(":", 1)
+                    text, timestamp = remainder.rsplit(".", 1)
+                    username = username.strip()
+                    text = text.strip()
+                    timestamp = timestamp.strip()
+                    
+
+                    # Simplify admin/user distinction
+                    is_admin = User.objects.filter(username=username, is_superuser=True).exists()
+                    response_data = {
+                        'username': username,
+                        'message': insert_newline(text),
+                        'timestamp': timestamp
+                    }
+                    if is_admin:
+                        admin_responses.append(response_data)
+                    else:
+                        user_responses.append(response_data)
+                    """
+                    # Check if user exists
+                    user_obj = User.objects.filter(username=username).first()
+                    if user_obj and user_obj.is_superuser:  # Admin response
+                    
+                        admin_responses.append({
+                            'username': username,
+                            'message': insert_newline(text),
+                            'timestamp': timestamp
+                        })
+                    elif user_obj:  # User response
+                        user_responses.append({
+                            'username': username,
+                            'message': insert_newline(text),
+                            'timestamp': timestamp
+                        })
+                    """
+                    logger.debug(f"Parsed: {username}, {text}, {timestamp}, Is Admin: {is_admin}")
+                except ValueError:
+                
+                    logger.error(f"Malformed response skipped: {message}")
+                    # Ignore malformed entries
+                    continue
+                    
+    # Handle the form submission for adding new responses
+    if request.method == 'POST':
+        form = TicketResponseForm(request.POST)
+        if form.is_valid():
+            response_message = form.cleaned_data['message']
+            response = f"{request.user.username}: {response_message} . {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
+            #response = f"{request.user.username}:  {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n" - {response_message}
+
+            if not ticket.responses:
+                ticket.responses = response
+            else:
+                ticket.responses += response
+
+            ticket.save()
+            return redirect('accounts:ticket_detail', ticket_id=ticket.id)
+    else:
+        form = TicketResponseForm()
+
+    return render(request, 'ticket_detail.html', {
+        'ticket': ticket,
+        'form': form,
+        'admin_responses': admin_responses,
+        'user_responses': user_responses,
     })
 
 
@@ -333,10 +502,10 @@ def activity_log_view(request):
             attempt_type='Failed to Log In'
         ).order_by('-timestamp').first()
 
-        if last_successful_login:
-            last_successful_login = hide_local_ip(last_successful_login)
-        if last_unsuccessful_login:
-            last_unsuccessful_login = hide_local_ip(last_unsuccessful_login)
+        #if last_successful_login:
+        #    last_successful_login = hide_local_ip(last_successful_login)
+        #if last_unsuccessful_login:
+        #    last_unsuccessful_login = hide_local_ip(last_unsuccessful_login)
     else:
         last_successful_login = None
         last_unsuccessful_login = None
