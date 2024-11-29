@@ -1,0 +1,37 @@
+/* Reset styles for headings and list items */
+.no-tailwindcss-base h1,
+.no-tailwindcss-base h2,
+.no-tailwindcss-base h3,
+.no-tailwindcss-base h4 {
+    font-size: revert;
+    font-weight: revert;
+}
+
+.no-tailwindcss-base ul,
+.no-tailwindcss-base ol {
+    list-style: revert;
+    margin: revert;
+    padding: revert;
+}
+
+.no-tailwindcss-base li {
+    margin: revert;
+    padding: revert;
+}
+
+/* Add these styles */
+input[name$="_other"] {
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+input[name$="_other"]:disabled {
+    background-color: #f3f4f6;
+    cursor: not-allowed;
+}
+
+/* Add this to ensure proper alignment */
+.flex-grow {
+    flex-grow: 1;
+}

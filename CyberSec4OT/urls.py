@@ -18,6 +18,10 @@ from django.contrib import admin
 from django.urls import path, include
 from . import views
 from .views import FAQForAllView
+from django.shortcuts import render
+
+def custom_404(request, exception):
+    return render(request, '404.html', status=404)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,7 +30,6 @@ urlpatterns = [
     path('faq_for_all/', FAQForAllView.as_view(), name='faq_for_all'),
     path('faq/', views.faq, name='faq'),  # URL pattern for faq
     path('about/', views.about_view, name='about'),  # URL pattern for the about page
-    path('contact/', views.contact, name='contact'),
     # URL pattern for the request demo page
     path('enroll-individual/', views.enroll_individual_view, name='enroll_individual'),
     # URL pattern for enrolling for individual plan
@@ -35,5 +38,13 @@ urlpatterns = [
     path('surveys/', include('surveys.urls')),
     path('', include("accounts.urls")),
     path('', include("payment.urls")),
-    
+    path('contact_us/', views.contact_us, name='contact_us'),
 ]
+
+from django.conf import settings
+from django.conf.urls.static import static
+
+if not settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+handler404 = 'CyberSec4OT.urls.custom_404'

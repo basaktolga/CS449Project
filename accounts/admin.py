@@ -147,14 +147,6 @@ class ContentAdmin(admin.ModelAdmin):
 
     inlines = [ContentCompletionInline]
 
-@admin.register(Path)
-class PathAdmin(admin.ModelAdmin):
-    list_display = ('name', 'difficulty', 'type', 'lessons', 'duration', 'points')
-    search_fields = ('name', 'description', 'type')
-    list_filter = ('difficulty', 'type')
-
-
-
 class TicketAdminForm(forms.ModelForm):
     response_text = forms.CharField(widget=forms.Textarea(attrs={'rows': 3, 'cols': 50}), required=False)
 
@@ -368,3 +360,27 @@ class TrendingCourseAdmin(admin.ModelAdmin):
     ordering = ('display_order',)
 
 admin.site.register(TrendingCourse, TrendingCourseAdmin)
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+
+
+@admin.register(Specialty)
+class SpecialtyAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+
+
+@admin.register(JobRole)
+class JobRoleAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+
+@admin.register(Path)
+class PathAdmin(admin.ModelAdmin):
+    list_display = ('name', 'difficulty', 'category', 'points', 'duration')
+    search_fields = ('name', 'description', 'category__name', 'specialties__name', 'job_roles__name')
+    list_filter = ('difficulty', 'category', 'specialties', 'job_roles')
+    filter_horizontal = ('specialties', 'job_roles', 'courses')

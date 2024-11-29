@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ path.name }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-6 bg-gray-50 dark:bg-gray-900">
+    <!-- Path Header -->
+    <div class="mb-6 text-center">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ path.name }}</h1>
+        <p class="mt-2 text-gray-700 dark:text-gray-300">{{ path.description }}</p>
+    </div>
+
+    <!-- Path Details -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Difficulty</h2>
+            <p class="text-gray-700 dark:text-gray-300">{{ path.get_difficulty_display }}</p>
+        </div>
+        <div>
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Type</h2>
+            <p class="text-gray-700 dark:text-gray-300">{{ path.type }}</p>
+        </div>
+        <div>
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Duration</h2>
+            <p class="text-gray-700 dark:text-gray-300">{{ path.duration }}</p>
+        </div>
+        <div>
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Points</h2>
+            <p class="text-gray-700 dark:text-gray-300">{{ path.points }}</p>
+        </div>
+    </div>
+
+    <!-- Courses in Path -->
+    {% if path.courses.exists %}
+    <div class="mt-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">Courses in this Path</h2>
+        <ul class="mt-4 space-y-2">
+            {% for course in path.courses.all %}
+            <li>
+                <a href="{% url 'education:course_page' slug=course.slug %}" class="text-blue-600 dark:text-blue-400 hover:underline">
+                    {{ course.name }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% else %}
+    <p class="mt-8 text-gray-700 dark:text-gray-300">No courses are currently linked to this path.</p>
+    {% endif %}
+</div>
+{% endblock %}

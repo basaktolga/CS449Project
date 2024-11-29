@@ -318,12 +318,33 @@ JAZZMIN_UI_TWEAKS = {
     }
 }
 
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'error.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'cyberotsec@gmail.com'
 EMAIL_HOST_PASSWORD = 'nvbf varc xcpk khzh'  # Use an app password for Gmail
+CONTACT_EMAIL = 'cyberotsec@gmail.com'
 
 SURVEY_EMAIL_FROM = 'cyberotsec@gmail.com'
 TINYMCE_DEFAULT_CONFIG = {
@@ -360,6 +381,10 @@ RECAPTCHA_KEYS = {
         'secret_key': '6LdpXVsqAAAAAAXqggAyPO16PytK6zOgTITfC7Fe'  # Current secret
     },
     'ticket': {
+        'site_key': '6LdpXVsqAAAAAK94LP4aSOUCEIHU52Plkdt8w65g',  # Same key for now
+        'secret_key': '6LdpXVsqAAAAAAXqggAyPO16PytK6zOgTITfC7Fe'  # Same secret for now
+    },
+    'contact_us': {
         'site_key': '6LdpXVsqAAAAAK94LP4aSOUCEIHU52Plkdt8w65g',  # Same key for now
         'secret_key': '6LdpXVsqAAAAAAXqggAyPO16PytK6zOgTITfC7Fe'  # Same secret for now
     }
