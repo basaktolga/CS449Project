@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.core.validators import EmailValidator
 from django.core.exceptions import ValidationError
 from django_recaptcha.fields import ReCaptchaField  
@@ -9,6 +9,7 @@ from .models import Ticket
 import magic 
 import re
 from education.models import Certificate, UserCertificate
+from django.contrib import messages
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True, validators=[EmailValidator()])
@@ -138,3 +139,29 @@ class UserCertificateForm(forms.ModelForm):
     class Meta:
         model = UserCertificate
         fields = ['user', 'certificate',  'expiration_date', 'status']
+
+class CustomAuthenticationForm(AuthenticationForm):
+    error_messages = {
+        'invalid_login': 'Please enter a correct username and password.',
+        'inactive': 'This account is inactive.',
+    }
+
+    def get_invalid_login_error(self):
+        return ValidationError(
+            self.error_messages['invalid_login'],
+            code='invalid_login',
+            params={'username': self.username_field.verbose_name},
+        )
+
+    def clean(self):
+        try:
+            cleaned_data = super().clean()
+            if hasattr(self, 'request'):
+                messages.error(
+                    self.request,
+                    self.error_messages['invalid_login'],
+                    extra_tags='login credential'
+                )
+            return cleaned_data
+        except ValidationError as e:
+            raise e
