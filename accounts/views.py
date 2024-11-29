@@ -30,7 +30,6 @@ from django.utils.decorators import method_decorator
 from django.core.cache import cache
 from datetime import datetime
 from .mixins import RateLimitMixin
-from django.contrib.auth.views import LoginView
 
 
 def register(request):
@@ -39,9 +38,8 @@ def register(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, "Registration successful.", extra_tags='login success')
-            
-            # Log the activity
+            messages.success(request, "Registration successful.")
+            from .models import UserActivityLog
             ip_address = get_client_ip(request)
             location = get_geolocation(ip_address)
             UserActivityLog.objects.create(
@@ -54,10 +52,9 @@ def register(request):
             )
             
             return redirect("education:user_dashboard")
+            
         else:
-            for field, errors in form.errors.items():
-                for error in errors:
-                    messages.error(request, f"{error}", extra_tags='login error')
+            messages.error(request, "Please correct the errors below.")
     else:
         form = CustomUserCreationForm()
     return render(request, "register.html", {"form": form})
@@ -751,23 +748,3 @@ def resend_verification_code(request):
             messages.error(request, f"Error sending new verification code: {str(e)}", extra_tags='error')
             
     return redirect('accounts:verify_action')
-
-class CustomLoginView(LoginView):
-    template_name = "login.html"
-
-    def form_invalid(self, form):
-        for error in form.non_field_errors():
-            messages.error(
-                self.request,
-                error,
-                extra_tags='login credential'
-            )
-        return super().form_invalid(form)
-
-    def form_valid(self, form):
-        messages.success(
-            self.request,
-            "Successfully logged in.",
-            extra_tags='login auth'
-        )
-        return super().form_valid(form)

@@ -10,16 +10,6 @@
 <div class="relative z-10 max-w-md mx-auto mt-10 p-8 bg-white rounded-lg shadow-lg dark:bg-gray-800">
     <h2 class="text-2xl font-bold mb-5 text-center text-gray-800 dark:text-white">Register</h2>
 
-    {% if messages %}
-        {% for message in messages %}
-            {% if 'login' in message.tags %}
-                <div class="mb-4 p-4 {% if 'error' in message.tags %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %} rounded-lg">
-                    <p class="text-sm">{{ message }}</p>
-                </div>
-            {% endif %}
-        {% endfor %}
-    {% endif %}
-
     <form method="post" enctype="multipart/form-data" onsubmit="return validateForm(event)">
         {% csrf_token %}
 
