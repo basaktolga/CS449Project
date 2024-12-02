@@ -9,9 +9,13 @@ from django.http import HttpResponse
 from accounts.forms import UserCertificateForm
 from django.contrib import messages
 from accounts.forms import CertificateValidationForm
+from .models import Certificate, Content
+from accounts.forms import UserCertificateForm
+from accounts.forms import CertificateValidationForm
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+import json
 #from django_ratelimit.decorators import ratelimit
-
-  # Import for rate limiting
 
 # Rate limit applied to allow 5 requests per minute per IP
 #@ratelimit(key='ip', rate='5/m', method='GET', block=True)
@@ -448,3 +452,60 @@ def enrolled_course(request, slug):
 def lecturer_profile(request, lecturer_id):
     lecturer = get_object_or_404(Lecturer, id=lecturer_id)
     return render(request, 'lecturer_profile.html', {'lecturer': lecturer})
+
+
+@login_required
+def learning_paths(request):
+    # Fetch all dynamic filter options
+    categories = Category.objects.all()
+    specialties = Specialty.objects.all()
+    job_roles = JobRole.objects.all()
+    
+    # Fetch paths to display
+    paths = Path.objects.all()
+
+    return render(
+        request,
+        'education/learning_paths.html',
+        {
+            'categories': categories,
+            'specialties': specialties,
+            'job_roles': job_roles,
+            'paths': paths,
+        },
+    )
+    
+@login_required
+def filter_paths(request):
+    difficulty = request.GET.get('difficulty', 'all')
+    category = request.GET.get('category', 'all')
+    specialty = request.GET.get('specialty', 'all')
+    job_role = request.GET.get('job_role', 'all')
+    
+    # Start with all paths
+    paths = Path.objects.all()
+    
+    # Apply filters if not 'all'
+    if difficulty != 'all':
+        paths = paths.filter(difficulty=difficulty)
+    
+    if category != 'all':
+        # Use exact match on category name
+        paths = paths.filter(category__name__iexact=category.replace('-', ' '))
+    
+    if specialty != 'all':
+        # Use ManyToMany relationship filtering
+        paths = paths.filter(specialties__name__iexact=specialty.replace('-', ' '))
+    
+    if job_role != 'all':
+        # Use ManyToMany relationship filtering
+        paths = paths.filter(job_roles__name__iexact=job_role.replace('-', ' '))
+    
+    return render(request, 'education/path_list_partial.html', {'paths': paths})
+
+
+
+@login_required
+def path_detail(request, path_id):
+    path = get_object_or_404(Path, slug=path_id)
+    return render(request, 'education/path_detail.html', {'path': path})

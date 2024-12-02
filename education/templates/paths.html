@@ -1,108 +1,317 @@
-{% extends 'base.html' %}
-{% load static %}
+{% extends 'base.html' %} 
 
-{% block title %}Learning Paths{% endblock %}
+{% load static %} 
+
+{% block title %}Learning Paths{%endblock %} 
 
 {% block content %}
 <div class="p-6 bg-gray-50 dark:bg-gray-900">
-    <!-- Paths Section Header -->
-    <div class="mb-6">
-        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">Cybersecurity Learning Paths</h2>
-        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Choose your learning path and start your cybersecurity journey</p>
+  <!-- Description Section -->
+  <div class="mb-6 text-center">
+    <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
+      Learning Paths
+    </h2>
+    <p class="mt-2 text-gray-700 dark:text-gray-300">
+      The Learning Paths page displays the skill and career paths available on
+      our platform.
+    </p>
+  </div>
+<!-- Filters Section -->
+<div class="mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <!-- Filter by Difficulty -->
+    <div class="relative">
+        <label for="difficultyFilter"
+            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Difficulty</label>
+        <select id="difficultyFilter" name="difficultyFilter"
+            class="mt-1 block w-full py-2 px-3 border bg-white rounded-md">
+            <option value="all">All</option>
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+        </select>
     </div>
 
-    <!-- Paths Grid -->
-    <div class="space-y-4">
-        {% for path in paths %}
-        <!-- Path Card -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-            <div class="w-full" x-data="{ open: false }">
-                <!-- Path Header -->
-                <button @click="open = !open" class="w-full">
-                    <div class="p-6 flex items-start space-x-6">
-                        <!-- Path Image -->
-                        <div class="flex-shrink-0">
-                            {% if path.image %}
-                                <img class="w-32 h-32 object-cover rounded-lg" src="{{ path.image.url }}" alt="{{ path.name }}">
-                            {% else %}
-                                <img class="w-32 h-32 object-cover rounded-lg" src="{% static 'images/path1.jpg' %}" alt="Default Path Image">
-                            {% endif %}
-                        </div>
-                        
-                        <!-- Path Info -->
-                        <div class="flex-1 text-left">
-                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">{{ path.name }}</h3>
-                            <p class="mt-2 text-gray-600 dark:text-gray-400">{{ path.description }}</p>
-                            
-                            <!-- Path Stats -->
-                            <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <div class="flex items-center">
-                                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                                    </svg>
-                                    <span class="text-sm text-gray-600 dark:text-gray-400">{{ path.difficulty }}</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                    <span class="text-sm text-gray-600 dark:text-gray-400">{{ path.duration }}</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                                    </svg>
-                                    <span class="text-sm text-gray-600 dark:text-gray-400">{{ path.lessons }} Lessons</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                                    </svg>
-                                    <span class="text-sm text-gray-600 dark:text-gray-400">{{ path.points }} Points</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Expand Button -->
-                        <div class="flex-shrink-0">
-                            <svg class="w-6 h-6 text-gray-400 transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                            </svg>
-                        </div>
-                    </div>
-                </button>
+    <!-- Filter by Category -->
+    <div class="relative">
+        <label for="categoryFilter" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
+        <select id="categoryFilter" name="categoryFilter"
+            class="mt-1 block w-full py-2 px-3 border bg-white rounded-md">
+            <option value="all">All</option>
+            {% for category in categories %}
+            <option value="{{ category.name|slugify }}">{{ category.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
 
-                <!-- Expandable Content -->
-                <div x-show="open" x-collapse class="border-t border-gray-200 dark:border-gray-700">
-                    <div class="p-6">
-                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Included Courses</h4>
-                        <div class="grid gap-4">
-                            {% for course in path.courses.all %}
-                            <div class="flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                                <span class="text-gray-700 dark:text-gray-300">{{ course.name }}</span>
-                            </div>
-                            {% endfor %}
-                        </div>
+    <!-- Filter by Specialty -->
+    <div class="relative">
+        <label for="specialtyFilter" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Specialty
+            Area</label>
+        <select id="specialtyFilter" name="specialtyFilter"
+            class="mt-1 block w-full py-2 px-3 border bg-white rounded-md">
+            <option value="all">All</option>
+            {% for specialty in specialties %}
+            <option value="{{ specialty.name|slugify }}">{{ specialty.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
 
-                        {% if path.faq %}
-                        <div class="mt-6">
-                            <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Frequently Asked Questions</h4>
-                            <div class="prose dark:prose-invert">
-                                {{ path.faq|linebreaks }}
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
+    <!-- Filter by Job Role -->
+    <div class="relative">
+        <label for="jobRoleFilter" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Job Role</label>
+        <select id="jobRoleFilter" name="jobRoleFilter" class="mt-1 block w-full py-2 px-3 border bg-white rounded-md">
+            <option value="all">All</option>
+            {% for job_role in job_roles %}
+            <option value="{{ job_role.name|slugify }}">{{ job_role.name }}</option>
+            {% endfor %}
+        </select>
     </div>
 </div>
 
-<!-- Alpine.js for handling dropdowns -->
-<script src="//unpkg.com/alpinejs" defer></script>
+
+<!-- Paths Slider -->
+<div class="relative">
+    <div class="overflow-x-auto whitespace-nowrap scroll-smooth" id="paths-slider">
+        <div class="flex gap-8"> <!-- Adjusted gap for larger cards -->
+            {% for path in paths %}
+            <div
+                class="w-96 h-[35rem] flex-shrink-0 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex flex-col">
+                {% if path.image %}
+                <img class="p-4 rounded-t-lg w-full h-72 object-cover" src="{{ path.image.url }}"
+                    alt="{{ path.name }}" />
+                {% else %}
+                <img class="p-4 rounded-t-lg w-full h-72 object-cover" src="{% static 'images/path1.jpg' %}"
+                    alt="Default Path Image" />
+                {% endif %}
+                <div class="px-6 pb-6 flex-grow flex flex-col justify-between">
+                    <div>
+                        <h5 class="my-3 text-2xl font-semibold text-gray-900 dark:text-white wrap-title">
+                            {{ path.name }}
+                        </h5>
+                        <p class="text-base text-gray-600 dark:text-gray-400 wrap-desc-2">
+                            {{ path.description }}
+                        </p>
+                    </div>
+                    <div class="learn-more-container mt-4">
+                        <a href="{% url 'education:path_detail' path.slug %}"
+                            class="block w-full text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-indigo-500 dark:hover:bg-indigo-600 dark:focus:ring-indigo-700">
+                            Learn More
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-gray-600 dark:text-gray-400">No learning paths found.</p>
+            {% endfor %}
+        </div>
+    </div>
+    <!-- Left and Right Arrows for Sliding -->
+    <button id="paths-slide-left"
+        class="absolute left-0 top-1/2 transform -translate-y-1/2 px-4 py-2 bg-purple-600 text-white rounded-full focus:outline-none hover:bg-purple-700">
+        &#10094;
+    </button>
+    <button id="paths-slide-right"
+        class="absolute right-0 top-1/2 transform -translate-y-1/2 px-4 py-2 bg-purple-600 text-white rounded-full focus:outline-none hover:bg-purple-700">
+        &#10095;
+    </button>
+
+    <!-- Path Indicators -->
+    <div class="flex justify-center items-center mt-4">
+        <div id="path-indicators" class="flex space-x-2">
+            <!-- Indicators will be dynamically generated here -->
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Remove horizontal scrollbar */
+    #paths-slider {
+        overflow-x: hidden; /* Prevent horizontal scrolling */
+    }
+
+    #paths-slider .flex {
+        gap: 2rem; /* Consistent spacing between cards */
+    }
+
+    .w-96 {
+        width: 30rem; /* Increased card width */
+    }
+
+    .h-[35rem] {
+        height: 35rem; /* Consistent card height */
+    }
+
+    /* Ensure consistent card layout */
+    .flex-grow {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Position Learn More button above the bottom */
+    .learn-more-container {
+        margin-top: auto; /* Pushes button to bottom of content */
+        padding-bottom: 1.5rem; /* Add some bottom padding */
+    }
+
+    .wrap-title {
+        word-wrap: break-word;
+        white-space: normal;
+        overflow-wrap: break-word;
+    }
+
+    .wrap-desc-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3; /* Limit to 3 lines */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: normal;
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+            const filters = document.querySelectorAll("#difficultyFilter, #categoryFilter, #specialtyFilter, #jobRoleFilter");
+
+            filters.forEach(filter => {
+                filter.addEventListener("change", () => {
+                    // Get filter values
+                    const difficulty = $("#difficultyFilter").val();
+                    const category = $("#categoryFilter").val();
+                    const specialty = $("#specialtyFilter").val();
+                    const job_role = $("#jobRoleFilter").val();
+
+                    // Perform AJAX request to filter paths
+                    $.ajax({
+                        url: '/paths/filter/', // Ensure this matches your URL pattern
+                        data: {
+                            'difficulty': difficulty,
+                            'category': category,
+                            'specialty': specialty,
+                            'job_role': job_role
+                        },
+                        success: function (data) {
+                            // Replace the content of the paths container
+                            $("#paths-slider .flex").html(data);
+
+                            // Re-initialize the slider
+                            initializeSlider();
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error fetching paths:', xhr.responseText);
+                        }
+                    });
+                });
+            });
+        // Initialize slider function (extracted from previous script)
+        function initializeSlider() {
+            const slider = document.getElementById("paths-slider");
+            const slideLeft = document.getElementById("paths-slide-left");
+            const slideRight = document.getElementById("paths-slide-right");
+            const pathCards = slider.querySelectorAll('.flex-shrink-0');
+            const indicatorsContainer = document.getElementById("path-indicators");
+
+            let currentIndex = 0;
+
+            // Create path indicators
+            function createPathIndicators() {
+                indicatorsContainer.innerHTML = ''; // Clear existing indicators
+                pathCards.forEach((_, index) => {
+                    const indicator = document.createElement('span');
+                    indicator.classList.add(
+                        'inline-block',
+                        'w-8',
+                        'h-1',
+                        'mx-1',
+                        'rounded-full',
+                        'cursor-pointer',
+                        index === currentIndex ? 'bg-purple-600' : 'bg-gray-300'
+                    );
+                    indicator.dataset.index = index;
+
+                    // Allow clicking on indicators to navigate
+                    indicator.addEventListener('click', () => {
+                        currentIndex = index;
+                        scrollToCurrentPath();
+                        updateIndicators();
+                    });
+
+                    indicatorsContainer.appendChild(indicator);
+                });
+            }
+
+            // Update indicators to highlight current path
+            function updateIndicators() {
+                const indicators = indicatorsContainer.querySelectorAll('span');
+                indicators.forEach((indicator, index) => {
+                    if (index === currentIndex) {
+                        indicator.classList.remove('bg-gray-300');
+                        indicator.classList.add('bg-purple-600');
+                    } else {
+                        indicator.classList.remove('bg-purple-600');
+                        indicator.classList.add('bg-gray-300');
+                    }
+                });
+            }
+
+            // Skip to next path
+            function skipToNextPath() {
+                if (currentIndex < pathCards.length - 1) {
+                    currentIndex++;
+                    scrollToCurrentPath();
+                    updateIndicators();
+                }
+            }
+
+            // Skip to previous path
+            function skipToPreviousPath() {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    scrollToCurrentPath();
+                    updateIndicators();
+                }
+            }
+
+            // Scroll to the current path card
+            function scrollToCurrentPath() {
+                const targetCard = pathCards[currentIndex];
+                targetCard.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest',
+                    inline: 'start'
+                });
+            }
+
+            // Scroll left
+            slideLeft.addEventListener("click", () => {
+                skipToPreviousPath();
+            });
+
+            // Scroll right
+            slideRight.addEventListener("click", () => {
+                skipToNextPath();
+            });
+
+            // Optional: Update current index based on scroll position
+            slider.addEventListener('scroll', () => {
+                const scrollPosition = slider.scrollLeft;
+                pathCards.forEach((card, index) => {
+                    const cardPosition = card.offsetLeft;
+                    if (Math.abs(scrollPosition - cardPosition) < 50) {
+                        currentIndex = index;
+                        updateIndicators();
+                    }
+                });
+            });
+
+            // Initialize
+            createPathIndicators();
+        }
+
+        // Initial slider initialization
+        initializeSlider();
+    });
+</script>
 {% endblock %}

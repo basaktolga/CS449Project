@@ -30,7 +30,7 @@ urlpatterns = [
     path('courses/owned/', views.owned_courses, name='owned_courses'),
     path('courses/filter_owned/', views.filter_owned_courses, name='filter_owned_courses'),
     path('courses/filter_available/', views.filter_available_courses, name='filter_available_courses'),
-
+    path('paths/', views.paths, name='paths'),
     path('courses/<slug:slug>/', views.course_page, name='course_page'),
     path('courses/<slug:slug>/enroll/', views.enroll_in_course, name='enroll_in_course'),
     path('courses/<slug:slug>/enrolled/', views.enrolled_course, name='enrolled_course'),
@@ -38,14 +38,12 @@ urlpatterns = [
     path('filter/', views.filter_courses, name='filter_courses'),
     path('my-badges/', views.my_badges, name='my_badges'),
     path('my-certificates/', views.my_certificates, name='my_certificates'),
-    
-    path('paths/', views.paths, name='paths'),
     path('certificate-validation/', views.certificate_validation, name='certificate_validation'),
     #path('certificate/<uuid:cert_id>/', views.certificate_detail, name='certificate_detail'),
-    
     path('certificate_detail/<uuid:user_certificate_id>/', views.certificate_detail, name='certificate_detail'),
-
     path('course/<slug:slug>/', views.course_page, name='course_detail'),
+    path('paths/filter/', views.filter_paths, name='filter_paths'),
+    path('paths/<slug:path_id>/', views.path_detail, name='path_detail'),
 
 ]
 

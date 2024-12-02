@@ -1,9 +1,14 @@
 {% extends "base_unauth.html" %}
 
+{% load static %}
+
 {% block title %}Login{% endblock %}
 
 {% block content %}
-<div class="max-w-md mx-auto mt-10 p-8 bg-white rounded-lg shadow-lg dark:bg-gray-900">
+
+<canvas id="fluid-canvas"></canvas>
+
+<div class="relative z-10 max-w-md mx-auto mt-10 p-8 bg-white rounded-lg shadow-lg dark:bg-gray-800">
     <h2 class="text-2xl font-bold mb-5 text-center text-gray-900 dark:text-white">Login</h2>
 
     {% if messages %}
@@ -66,4 +71,27 @@ function validateForm(event) {
     return true;
 }
 </script>
+<!-- Fluid Canvas Script -->
+<script src="{% static 'fluid/fluid_simulation.js' %}"></script>
+<style>
+    /* Make the canvas cover the whole screen */
+    #fluid-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0; /* -1 yapinca footer geliyor fakat style'da cozulmesi gereken bir sikinti var */
+    }
+
+    /* Ensure the login box is above the canvas */
+    .relative.z-10 {
+        z-index: 10; /* Bring login box above the canvas */
+    }
+
+    /* Prevent body scroll */
+    body {
+        overflow: hidden;
+    }
+</style>
 {% endblock %}

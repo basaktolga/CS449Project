@@ -4,8 +4,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from accounts.models import *
 import uuid
-
-
+from django.utils.text import slugify
 
 
 """
@@ -205,21 +204,53 @@ class ContentCompletion(models.Model):
     class Meta:
         unique_together = ('user', 'content')
 
-# Path model
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class Specialty(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class JobRole(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
 class Path(models.Model):
     DIFFICULTY_CHOICES = [
-        ('easy', 'Easy'),
-        ('medium', 'Medium'),
-        ('hard', 'Hard'),
+        ('beginner', 'Beginner'),
+        ('intermediate', 'Intermediate'),
+        ('advanced', 'Advanced'),
     ]
     name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=100, unique=True, blank=True)
     description = models.TextField()
     difficulty = models.CharField(max_length=30, choices=DIFFICULTY_CHOICES)
-    type = models.CharField(max_length=30)  # e.g., Offensive, Defensive, etc.
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+    specialties = models.ManyToManyField(Specialty, blank=True)
+    job_roles = models.ManyToManyField(JobRole, blank=True)
     lessons = models.PositiveIntegerField()
-    duration = models.CharField(max_length=50)  # Duration of the course, e.g., "7 hours", "3 days", "81 days"
+    duration = models.CharField(max_length=50)  # e.g., "7 hours", "3 days", etc.
     points = models.PositiveIntegerField()  # Points required to unlock
-    image = models.ImageField(upload_to='static/paths', blank=True, null=True)  # Assumes ImageField will be used
+    image = models.ImageField(upload_to='static/paths', blank=True, null=True)
+    courses = models.ManyToManyField('education.Course', related_name='paths', blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
 
 class TrendingCourse(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -230,5 +261,3 @@ class TrendingCourse(models.Model):
 
     def __str__(self):
         return f"{self.course.name} (Order: {self.display_order})"
-
-

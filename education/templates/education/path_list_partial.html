@@ -1,0 +1,30 @@
+{% load static %}
+{% for path in paths %}
+<div class="w-96 h-[40rem] flex-shrink-0 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex flex-col">
+    {% if path.image %}
+    <img class="p-4 rounded-t-lg w-full h-72 object-cover" src="{{ path.image.url }}"
+        alt="{{ path.name }}" />
+    {% else %}
+    <img class="p-4 rounded-t-lg w-full h-72 object-cover" src="{% static 'images/path1.jpg' %}"
+        alt="Default Path Image" />
+    {% endif %}
+    <div class="px-6 pb-6 flex-grow flex flex-col justify-between">
+        <div>
+            <h5 class="my-3 text-2xl font-semibold text-gray-900 dark:text-white wrap-title">
+                {{ path.name }}
+            </h5>
+            <p class="text-base text-gray-600 dark:text-gray-400 wrap-desc-2">
+                {{ path.description }}
+            </p>
+        </div>
+        <div class="learn-more-container mt-4">
+            <a href="{% url 'education:path_detail' path.slug %}"
+                class="block w-full text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-indigo-500 dark:hover:bg-indigo-600 dark:focus:ring-indigo-700">
+                Learn More
+            </a>
+        </div>
+    </div>
+</div>
+{% empty %}
+<p class="text-gray-600 dark:text-gray-400">No learning paths found.</p>
+{% endfor %}
