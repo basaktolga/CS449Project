@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Survey, Question, Answer, UserAnswer, TermsValidators, ConsentFormContent
+from .models import Survey, Question, Answer, UserAnswer, TermsValidators, ConsentFormContent, Section
 
 
 class AdminQuestion(admin.ModelAdmin):
@@ -45,8 +45,32 @@ class AdminTermsValidator(admin.ModelAdmin):
 class ConsentFormContentAdmin(admin.ModelAdmin):
     list_display = ('title',)
 
+
+class SectionInline(admin.TabularInline):
+    model = Section
+    extra = 1
+
+
+class QuestionInline(admin.TabularInline):
+    model = Question
+    extra = 1
+
+
+@admin.register(Survey)
+class SurveyAdmin(admin.ModelAdmin):
+    inlines = [SectionInline]
+    list_display = ('name', 'slug')
+    search_fields = ('name', 'slug')
+
+
+@admin.register(Section)
+class SectionAdmin(admin.ModelAdmin):
+    list_display = ['name', 'survey', 'ordering']
+    list_filter = ['survey']
+    search_fields = ['name', 'survey__name']
+    ordering = ['survey', 'ordering']
+
 admin.site.register(ConsentFormContent)
-admin.site.register(Survey, AdminSurvey)
 admin.site.register(Question, AdminQuestion)
 admin.site.register(Answer, AdminAnswer)
 admin.site.register(UserAnswer, AdminUserAnswer)

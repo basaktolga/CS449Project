@@ -88,6 +88,21 @@ class Survey(BaseModel):
         super().save(*args, **kwargs)
 
 
+class Section(BaseModel):
+    survey = models.ForeignKey(Survey, on_delete=models.CASCADE, related_name='sections')
+    name = models.CharField(_("name"), max_length=255)
+    description = models.TextField(_("description"), blank=True, null=True)
+    ordering = models.IntegerField(_("ordering"), default=0)
+
+    class Meta:
+        ordering = ['ordering', 'id']
+        verbose_name = _("section")
+        verbose_name_plural = _("sections")
+
+    def __str__(self):
+        return f"{self.name} - {self.survey.name}"
+
+
 class Question(BaseModel):
     TYPE_FIELD = [
         (TYPE_FIELD.text, _("Text")),
@@ -136,6 +151,13 @@ class Question(BaseModel):
         blank=True, 
         null=True,
         help_text=_("This text will be shown when hovering over the question.")
+    )
+    section = models.ForeignKey(
+        Section, 
+        on_delete=models.CASCADE, 
+        related_name='questions',
+        null=True, 
+        blank=True
     )
 
     class Meta:

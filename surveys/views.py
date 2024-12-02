@@ -36,7 +36,7 @@ class SurveyListView(ContextTitleMixin, UserPassesTestMixin, ListView):
             object_list = self.model.objects.filter(name__icontains=query, **filter)
         else:
             object_list = self.model.objects.filter(**filter)
-        return object_list
+        return object_list.order_by('-created_at')
 
     def get_context_data(self, **kwargs):
         page_number = self.request.GET.get('page', 1)

@@ -237,3 +237,19 @@ class EditSurveyForm(BaseSurveyForm):
             if not created and answer:
                 answer.value = value
                 answer.save()
+
+
+class SurveyForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        survey = kwargs.pop('survey', None)
+        super().__init__(*args, **kwargs)
+        
+        if survey:
+            for question in survey.question_set.all():
+                field_name = f'field_survey_{question.id}'
+                # Create the form field with the correct name
+                self.fields[field_name] = self.create_field(question)
+
+    def create_field(self, question):
+        # Your existing field creation logic
+        pass
