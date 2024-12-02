@@ -3,8 +3,19 @@ from .models import Survey, Question, Answer, UserAnswer, TermsValidators, Conse
 
 
 class AdminQuestion(admin.ModelAdmin):
-    list_display = ('survey', 'label', 'type_field', 'help_text', 'required')
+    list_display = ('survey', 'label', 'type_field', 'help_text', 'required', 'hover_text')
     search_fields = ('survey__name', )
+    fields = (
+        'label', 
+        'survey', 
+        'type_field', 
+        'choices', 
+        'help_text', 
+        'hover_text', 
+        'required', 
+        'ordering', 
+        'include_other'
+    )
 
 
 class AdminAnswer(admin.ModelAdmin):

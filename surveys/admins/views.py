@@ -92,7 +92,7 @@ class AdminCreateQuestionView(ContextTitleMixin, CreateView):
     model = Question
     template_name = 'surveys/admins/question_form.html'
     success_url = reverse_lazy("surveys:")
-    fields = ['label', 'key', 'type_field', 'choices', 'help_text', 'required']
+    fields = ['label', 'key', 'type_field', 'choices', 'help_text', 'hover_text', 'required']
     title_page = _("Add Question")
     survey = None
 
@@ -123,7 +123,7 @@ class AdminUpdateQuestionView(ContextTitleMixin, UpdateView):
     model = Question
     template_name = 'surveys/admins/question_form.html'
     success_url = SURVEYS_ADMIN_BASE_PATH
-    fields = ['label', 'key', 'type_field', 'choices', 'help_text', 'required']
+    fields = ['label', 'key', 'type_field', 'choices', 'help_text', 'hover_text', 'required']
     title_page = _("Add Question")
     survey = None
 

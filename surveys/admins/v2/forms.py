@@ -12,19 +12,23 @@ class QuestionForm(forms.ModelForm):
     
     class Meta:
         model = Question
-        fields = ['label', 'key', 'help_text', 'required']
+        fields = ['label', 'key', 'help_text', 'hover_text', 'required']
 
 
 class QuestionWithChoicesForm(forms.ModelForm):
     
     class Meta:
         model = Question
-        fields = ['label', 'key', 'choices', 'help_text', 'required', 'include_other']
+        fields = ['label', 'key', 'choices', 'help_text', 'hover_text', 'required', 'include_other']
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['choices'].widget = InlineChoiceField()
         self.fields['choices'].help_text = _("Click Button Add to adding choice")
+        self.fields['hover_text'].widget = forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': _('Enter text to show when hovering over the question')
+        })
         if self.instance and self.instance.type_field != TYPE_FIELD.radio:
             self.fields['include_other'].widget = forms.HiddenInput()
 
@@ -33,7 +37,7 @@ class QuestionFormRatings(forms.ModelForm):
     
     class Meta:
         model = Question
-        fields = ['label', 'key', 'choices', 'help_text', 'required']
+        fields = ['label', 'key', 'choices', 'help_text', 'hover_text', 'required']
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -41,6 +45,10 @@ class QuestionFormRatings(forms.ModelForm):
         self.fields['choices'].help_text = _("Must be between 1 and 10")
         self.fields['choices'].label = _("Number of ratings")
         self.fields['choices'].initial = 5
+        self.fields['hover_text'].widget = forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': _('Enter text to show when hovering over the question')
+        })
 
 
 class QuestionEmailForm(forms.ModelForm):
@@ -62,7 +70,7 @@ class QuestionEmailForm(forms.ModelForm):
 
     class Meta:
         model = Question
-        fields = ['label', 'key', 'help_text', 'required', 'type_filter', 'email_domain']
+        fields = ['label', 'key', 'help_text', 'hover_text', 'required', 'type_filter', 'email_domain']
 
 
 class QuestionTextForm(forms.ModelForm):
@@ -79,7 +87,7 @@ class QuestionTextForm(forms.ModelForm):
 
     class Meta:
         model = Question
-        fields = ['label', 'key', 'help_text', 'required', 'max_length', 'min_length']
+        fields = ['label', 'key', 'help_text', 'hover_text', 'required', 'max_length', 'min_length']
 
 
 class QuestionNumberForm(forms.ModelForm):
@@ -92,7 +100,7 @@ class QuestionNumberForm(forms.ModelForm):
 
     class Meta:
         model = Question
-        fields = ['label', 'key', 'help_text', 'required', 'max_value', 'min_value']
+        fields = ['label', 'key', 'help_text', 'hover_text', 'required', 'max_value', 'min_value']
 
 
 class QuestionTextAreaForm(forms.ModelForm):
@@ -111,7 +119,7 @@ class QuestionTextAreaForm(forms.ModelForm):
 
     class Meta:
         model = Question
-        fields = ['label', 'key', 'help_text', 'required', 'max_length', 'min_length']
+        fields = ['label', 'key', 'help_text', 'hover_text', 'required', 'max_length', 'min_length']
 
 
 class SurveyForm(forms.ModelForm):

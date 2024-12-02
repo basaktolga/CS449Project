@@ -130,6 +130,13 @@ class Question(BaseModel):
         default=True,
         help_text=_("If True, adds an 'Other' option with text input for radio buttons")
     )
+    hover_text = models.CharField(
+        _("hover text"),
+        max_length=500, 
+        blank=True, 
+        null=True,
+        help_text=_("This text will be shown when hovering over the question.")
+    )
 
     class Meta:
         verbose_name = _("question")

@@ -1,5 +1,8 @@
 from django.template import Library
 from surveys.utils import create_star as utils_create_star
+from django import template
+from surveys.models import Question
+
 register = Library()
 
 
@@ -25,3 +28,16 @@ def get_id_field(field):
 @register.simple_tag
 def create_star(number, id_element, num_stars):
     return utils_create_star(active_star=int(number), num_stars=num_stars, id_element=id_element)
+
+
+@register.filter
+def get_hover_text(field):
+    """Get the hover text for a field if it exists"""
+    try:
+        question_id = field.auto_id.split('_')[-1]
+        if question_id.isdigit():
+            question = Question.objects.get(id=question_id)
+            return question.hover_text
+    except (Question.DoesNotExist, AttributeError):
+        pass
+    return None

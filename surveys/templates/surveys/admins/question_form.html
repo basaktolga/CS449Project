@@ -1,23 +1,65 @@
 {% extends 'surveys/admins/form.html' %}
 
+{% block content %}
+<div class="max-w-screen-xl px-4 py-16 mx-auto sm:px-6 lg:px-8">
+    <div class="max-w-lg mx-auto">
+        <h1 class="text-2xl font-bold text-center text-blue-500 sm:text-3xl">{{ title_page }}</h1>
+
+        <div class="p-8 mt-6 mb-0 space-y-4 rounded-lg shadow-md border border-gray-200 bg-white">
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="mb-5" id="section_field_{{ field.auto_id }}">
+                        <label class="text-base font-medium">{{ field.label }}</label>
+                        {% if field.name == "hover_text" %}
+                            <div class="mt-1 relative">
+                                {{ field|addclass:'w-full p-4 pr-12 text-sm border-gray-500 rounded-lg shadow-sm' }}
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="mt-1">
+                                {{ field|addclass:'w-full p-4 pr-12 text-sm border-gray-500 rounded-lg shadow-sm' }}
+                            </div>
+                        {% endif %}
+                        <p class="text-xs text-gray-400 mt-2">{{ field.help_text }}</p>
+                        <span class="text-xs text-red-400">{{ field.errors }}</span>
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="block w-full px-5 py-3 text-sm font-medium text-white bg-blue-500 rounded-lg">
+                    Submit
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
 {% block extra_js %}
+    {{ block.super }}
     <script>
-        var choicesVal = document.getElementById('id_type_field').value;
+        var choicesVal = document.getElementById('id_type_field')?.value;
         var elChoice = document.querySelector("#section_field_id_choices");
 
-        toggleChoices(choicesVal);
+        if (choicesVal) {
+            toggleChoices(choicesVal);
 
-        document.getElementById('id_type_field').addEventListener('change', function() {
-          console.log('You selected: ', this.value);
-          toggleChoices(this.value);
-        });
+            document.getElementById('id_type_field').addEventListener('change', function() {
+                console.log('You selected: ', this.value);
+                toggleChoices(this.value);
+            });
+        }
 
         function toggleChoices(value) {
             if (value == 2 || value == 3 || value == 4) {
-              elChoice.hidden = false;
-          } else {
-              elChoice.hidden = true;
-          }
+                elChoice.hidden = false;
+            } else {
+                elChoice.hidden = true;
+            }
         }
     </script>
 {% endblock %}
