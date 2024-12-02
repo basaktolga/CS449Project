@@ -16,4 +16,8 @@ urlpatterns = [
     path('question/ordering/', admin_views.AdminChangeOrderQuestionView.as_view(), name='admin_change_order_question'),
     path('download/survey/<str:slug>/', admin_views.DownloadResponseSurveyView.as_view(), name='admin_download_survey'),
     path('summary/survey/<str:slug>/', admin_views.SummaryResponseSurveyView.as_view(), name='admin_summary_survey'),
+    path('section/add/<str:slug>/', admin_views.AdminCreateSectionView.as_view(), name='admin_add_section'),
+    path('section/edit/<int:pk>/', admin_views.AdminUpdateSectionView.as_view(), name='admin_edit_section'),
+    path('section/delete/<int:pk>/', admin_views.AdminDeleteSectionView.as_view(), name='admin_delete_section'),
+    path('section/ordering/', admin_views.AdminChangeOrderSectionView.as_view(), name='admin_change_order_section'),
 ]

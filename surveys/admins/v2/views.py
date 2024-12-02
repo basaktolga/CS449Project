@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.http import Http404
 
 from surveys.app_settings import SURVEYS_ADMIN_BASE_PATH
-from surveys.models import Survey, Question, TYPE_FIELD, TermsValidators
+from surveys.models import Survey, Question, TYPE_FIELD, TermsValidators, Section
 from surveys.mixin import ContextTitleMixin
 from surveys.admins.v2.forms import (
     QuestionForm, QuestionWithChoicesForm, QuestionFormRatings, QuestionEmailForm, QuestionTextForm,
@@ -52,6 +52,12 @@ class AdminCreateQuestionView(ContextTitleMixin, CreateView):
             return QuestionNumberForm
         else:
             return QuestionForm
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        # Filter sections to only show sections from the current survey
+        form.fields['section'].queryset = Section.objects.filter(survey=self.survey)
+        return form
 
     def form_valid(self, form):
         question = form.save(commit=False)
@@ -161,6 +167,12 @@ class AdminUpdateQuestionView(ContextTitleMixin, UpdateView):
                 initial['min_value'] = terms.min_value
                 initial['max_value'] = terms.max_value
         return initial
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        # Filter sections to only show sections from the current survey
+        form.fields['section'].queryset = Section.objects.filter(survey=self.object.survey)
+        return form
 
     def form_valid(self, form):
         question = form.save(commit=False)
