@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load markdown %}
+{% load markdown_extras %}  <!-- Load your custom markdown filter -->
 
 {% block title %}{{ course.name }} - Enrolled{% endblock %}
 
@@ -58,7 +58,74 @@
                 </div>
                 {% else %}
                 <div class="prose dark:prose-invert max-w-none mt-4">
-                    {{ content.content_data|markdown }}
+                    <style>
+                        .prose {
+                            max-width: 65ch; /* Limit the width for better readability */
+                            line-height: 1.6; /* Improve line height */
+                        }
+
+                        .prose h1 {
+                            font-size: 2rem; /* Adjust size for h1 */
+                            margin-top: 1.5rem; /* Add spacing above */
+                            margin-bottom: 0.5rem; /* Add spacing below */
+                        }
+
+                        .prose h2 {
+                            font-size: 1.75rem; /* Adjust size for h2 */
+                            margin-top: 1.5rem; /* Add spacing above */
+                            margin-bottom: 0.5rem; /* Add spacing below */
+                        }
+
+                        .prose h3 {
+                            font-size: 1.5rem; /* Adjust size for h3 */
+                            margin-top: 1.5rem; /* Add spacing above */
+                            margin-bottom: 0.5rem; /* Add spacing below */
+                        }
+
+                        .prose h4 {
+                            font-size: 1.25rem; /* Adjust size for h4 */
+                            margin-top: 1.5rem; /* Add spacing above */
+                            margin-bottom: 0.5rem; /* Add spacing below */
+                        }
+
+                        .prose p {
+                            margin-bottom: 1rem; /* Add spacing below paragraphs */
+                        }
+
+                        .prose ul, .prose ol {
+                            margin-left: 1.5rem; /* Indent lists */
+                            margin-bottom: 1rem; /* Add spacing below lists */
+                        }
+
+                        .prose a {
+                            color: #1d4ed8; /* Tailwind blue-600 */
+                            text-decoration: underline; /* Underline links */
+                        }
+
+                        .prose img {
+                            max-width: 100%; /* Make images responsive */
+                            height: auto; /* Maintain aspect ratio */
+                        }
+
+                        /* Code block styling */
+                        pre {
+                            background-color: #f8f8f8; /* Light background for code blocks */
+                            border: 1px solid #ddd; /* Border around code blocks */
+                            border-radius: 4px; /* Rounded corners */
+                            padding: 1rem; /* Padding inside the code block */
+                            overflow-x: auto; /* Horizontal scroll for long lines */
+                            margin: 1rem 0; /* Margin above and below code blocks */
+                        }
+
+                        code {
+                            font-family: 'Courier New', Courier, monospace; /* Monospace font for inline code */
+                            background-color: #2a2222; /* Light background for inline code */
+                            color: rgb(46, 233, 46);
+                            padding: 0.2rem 0.4rem; /* Padding for inline code */
+                            border-radius: 3px; /* Rounded corners for inline code */
+                        }
+                    </style>
+                    {{ content.content_data|markdown|safe }}  <!-- Use the markdown filter and mark as safe -->
                 </div>
                 {% endif %}
             </div>
