@@ -181,7 +181,7 @@ class Content(models.Model):
     video = models.FileField(upload_to='media/videos/', blank=True, null=True)
     video_url = models.URLField(blank=True, null=True)
     has_video = models.BooleanField(default=False)
-    content_data = models.JSONField(blank=True, null=True)
+    content_data = models.TextField(blank=True, null=True)
     #quiz = models.ForeignKey('Quiz', related_name='contents', on_delete=models.SET_NULL, null=True, blank=True)
     completed_by = models.ManyToManyField(User, through='ContentCompletion', related_name='completed_content')
 

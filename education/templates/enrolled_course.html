@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load markdown %}
 
 {% block title %}{{ course.name }} - Enrolled{% endblock %}
 
@@ -55,10 +56,11 @@
                 <div class="relative w-full rounded-lg overflow-hidden" style="padding-top: 56.25%;">
                     <iframe src="{{ content.video_url }}" class="absolute top-0 left-0 w-full h-full" frameborder="0" allowfullscreen></iframe>
                 </div>
-                {% endif %}
+                {% else %}
                 <div class="prose dark:prose-invert max-w-none mt-4">
-                    {{ content.content_data|safe }}
+                    {{ content.content_data|markdown }}
                 </div>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
@@ -79,11 +81,10 @@
         <!-- Notes Section with TipTap Editor -->
         <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="notes" role="tabpanel" aria-labelledby="notes-tab">
             {% include "wysiwyg_editor.html" %}
-            <div id="editor" class="block w-full px-0 text-sm text-gray-800 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400 min-h-[200px]"></div>
         </div>
         <!-- Codepad Section -->
         <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="codepad" role="tabpanel" aria-labelledby="codepad-tab">
-            <textarea id="codepad-editor" class="w-full h-64 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg p-4"></textarea>
+            {% include "wysiwyg_editor.html" %}
         </div>
     </div>
 
