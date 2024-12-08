@@ -16,33 +16,36 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls.i18n import i18n_patterns
 from . import views
 from .views import FAQForAllView
 from django.shortcuts import render
+from django.conf import settings
+from django.conf.urls.static import static
 
 def custom_404(request, exception):
     return render(request, '404.html', status=404)
 
+# Non-localized URLs (URLs that shouldn't have language prefix)
 urlpatterns = [
+    path('i18n/', include('django.conf.urls.i18n')),
     path('admin/', admin.site.urls),
+]
+
+# Localized URLs - these will have language prefix
+urlpatterns += i18n_patterns(
     path('', views.home_view, name='home'),
     path('request-demo/', views.request_demo_view, name='request_demo'),
     path('faq_for_all/', FAQForAllView.as_view(), name='faq_for_all'),
-    path('faq/', views.faq, name='faq'),  # URL pattern for faq
-    path('about/', views.about_view, name='about'),  # URL pattern for the about page
-    # URL pattern for the request demo page
-    path('enroll-individual/', views.enroll_individual_view, name='enroll_individual'),
-    # URL pattern for enrolling for individual plan
-    path('enroll-school/', views.enroll_school_view, name='enroll_school'),
+    path('faq/', views.faq, name='faq'),
+    path('about/', views.about_view, name='about'),
     path('', include('education.urls')),
     path('surveys/', include('surveys.urls')),
     path('', include("accounts.urls")),
     path('', include("payment.urls")),
     path('contact_us/', views.contact_us, name='contact_us'),
-]
-
-from django.conf import settings
-from django.conf.urls.static import static
+    prefix_default_language=True  # This will add prefix for default language too
+)
 
 if not settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

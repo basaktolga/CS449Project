@@ -3,319 +3,302 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-05 11:58+0000\n"
-"PO-Revision-Date: 2022-11-06 19:07+0100\n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"Language: en\n"
+"POT-Creation-Date: 2024-12-05 00:48+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.0.1\n"
-
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 #: surveys/admins/v2/forms.py:21 surveys/admins/v2/forms.py:37
 #: surveys/admins/views.py:103 surveys/admins/views.py:136
 msgid "No Section"
-msgstr ""
+msgstr "Bölüm Yok"
 
 #: surveys/admins/v2/forms.py:40
 msgid "Click Button Add to adding choice"
-msgstr "Click Button Add to adding choice"
+msgstr "Seçenek Eklemek için Butona Tıklayın"
 
 #: surveys/admins/v2/forms.py:43 surveys/admins/v2/forms.py:63
 msgid "Enter text to show when hovering over the question"
-msgstr ""
+msgstr "Soru üzerinde geçerken görüntülenecek metni girin"
 
 #: surveys/admins/v2/forms.py:58
 msgid "Must be between 1 and 10"
-msgstr ""
+msgstr "1 ile 10 arasında olmalıdır"
 
 #: surveys/admins/v2/forms.py:59
 msgid "Number of ratings"
-msgstr ""
+msgstr "Değerlendirme Sayısı"
 
 #: surveys/admins/v2/forms.py:69
 msgid "Type Filter"
-msgstr ""
+msgstr "Tip Filtresi"
 
 #: surveys/admins/v2/forms.py:71
 msgid "--- Choices ---"
-msgstr ""
+msgstr "--- Seçenekler ---"
 
 #: surveys/admins/v2/forms.py:77
 msgid "Filter type to accept allowed email domains"
-msgstr ""
+msgstr "İzin verilen e-posta etki alanlarını kabul eden filtre tipi"
 
 #: surveys/admins/v2/forms.py:80
-#, fuzzy
-#| msgid "Click Button Add to adding choice"
 msgid "Click Button Add to adding data"
-msgstr "Click Button Add to adding choice"
+msgstr "Veri Eklemek için Butona Tıklayın"
 
 #: surveys/admins/v2/forms.py:91 surveys/admins/v2/forms.py:121
 msgid "Max. Length"
-msgstr ""
+msgstr "Maksimum Uzunluk"
 
 #: surveys/admins/v2/forms.py:93 surveys/admins/v2/forms.py:124
 msgid "Max. Length: Text input"
-msgstr ""
+msgstr "Maksimum Uzunluk: Metin Girişi"
 
 #: surveys/admins/v2/forms.py:96 surveys/admins/v2/forms.py:127
 msgid "Min. Length"
-msgstr ""
+msgstr "Minimum Uzunluk"
 
 #: surveys/admins/v2/forms.py:98 surveys/admins/v2/forms.py:130
 msgid "Min. Length: Text input"
-msgstr ""
+msgstr "Minimum Uzunluk: Metin Girişi"
 
 #: surveys/admins/v2/forms.py:108
 msgid "Max. Value"
-msgstr ""
+msgstr "Maksimum Değer"
 
 #: surveys/admins/v2/forms.py:108
 msgid "Max. value: Number"
-msgstr ""
+msgstr "Maksimum Değer: Sayı"
 
 #: surveys/admins/v2/forms.py:111
 msgid "Min. Value"
-msgstr ""
+msgstr "Minimum Değer"
 
 #: surveys/admins/v2/forms.py:111
 msgid "Min. value: Number"
-msgstr ""
+msgstr "Minimum Değer: Sayı"
 
 #: surveys/admins/v2/forms.py:152
 msgid ""
 "Leave the field blank if you want the slug to be generated automatically"
-msgstr ""
+msgstr "Slug otomatik olarak oluşturulmasını istiyorsanız alanı boş bırakın"
 
 #: surveys/admins/v2/forms.py:158 surveys/admins/v2/forms.py:160
 msgid "Slug already exists"
-msgstr ""
+msgstr "Slug zaten mevcut"
 
 #: surveys/admins/v2/views.py:25 surveys/admins/views.py:93
 msgid "Add Question"
-msgstr "Add Question"
+msgstr "Soru Ekle"
 
 #: surveys/admins/v2/views.py:90 surveys/admins/v2/views.py:209
 #: surveys/admins/views.py:34 surveys/admins/views.py:48
 #: surveys/admins/views.py:112 surveys/views.py:83
 #, python-format
 msgid "%(page_action_name)s succeeded."
-msgstr "%(page_action_name)s succeeded."
+msgstr "%(page_action_name)s başarıyla tamamlandı."
 
 #: surveys/admins/v2/views.py:103 surveys/admins/v2/views.py:223
 #, python-format
 msgid "Type Field %s"
-msgstr ""
+msgstr "Alan Tipi: %s"
 
 #: surveys/admins/v2/views.py:111 surveys/admins/views.py:125
-#, fuzzy
-#| msgid "Add Question"
 msgid "Edit Question"
-msgstr "Add Question"
+msgstr "Soru Düzenle"
 
 #: surveys/admins/views.py:30
 msgid "Add New Survey"
-msgstr "Add New Survey"
+msgstr "Yeni Anket Ekle"
 
 #: surveys/admins/views.py:44
 msgid "Edit Survey"
-msgstr "Edit Survey"
+msgstr "Anket Düzenle"
 
 #: surveys/admins/views.py:83
-#, fuzzy, python-format
-#| msgid "Survey %(name)s succesfully deleted."
+#, python-format
 msgid "Survey %ss succesfully deleted."
-msgstr "Survey %s succesfully deleted."
+msgstr "Anket %s başarıyla silindi."
 
 #: surveys/admins/views.py:153
-#, fuzzy, python-format
-#| msgid "Question %(name)s succesfully deleted."
+#, python-format
 msgid "Question %ss succesfully deleted."
-msgstr "Question %s succesfully deleted."
+msgstr "Soru %s başarıyla silindi.  "
 
 #: surveys/admins/views.py:168
 msgid "Update ordering of questions succeeded."
-msgstr "Update ordering of questions succeeded."
+msgstr "Soru sıralaması başarıyla güncellendi"
 
 #: surveys/admins/views.py:229 surveys/templates/surveys/admins/summary.html:16
 msgid "Summary"
-msgstr "Summary"
+msgstr "Özet"
 
 #: surveys/admins/views.py:243
 #: surveys/templates/surveys/admins/form_preview.html:54
-#, fuzzy
-#| msgid "Add Question"
 msgid "Add Section"
-msgstr "Add Question"
+msgstr "Bölüm Ekle"
 
 #: surveys/admins/views.py:263
-#, fuzzy
-#| msgid "Add Question"
 msgid "Edit Section"
-msgstr "Add Question"
+msgstr "Bölüm Düzenle"
 
 #: surveys/admins/views.py:276
-#, fuzzy
-#| msgid "Question %(name)s succesfully deleted."
 msgid "Section deleted successfully."
-msgstr "Question %s succesfully deleted."
+msgstr "Bölüm başarıyla silindi."
 
 #: surveys/admins/views.py:297
 msgid "Section order updated successfully."
-msgstr ""
+msgstr "Bölüm sıralaması başarıyla güncellendi"
 
 #: surveys/forms.py:48
 msgid "Other"
-msgstr ""
+msgstr "Diğer"
 
 #: surveys/forms.py:58
 msgid "Choose"
-msgstr ""
+msgstr "Seçin"
 
 #: surveys/forms.py:150 surveys/forms.py:171
 msgid "Please specify other option"
-msgstr ""
+msgstr "Lütfen Diğer seçeneği belirtin"
 
 #: surveys/forms.py:188
 #, python-brace-format
 msgid "Notification {survey_name}"
-msgstr ""
+msgstr "Bildirim {survey_name}"
 
 #: surveys/forms.py:189
 #, python-brace-format
 msgid ""
 "You have received one new response. The total number of responses is "
 "currently {count}"
-msgstr ""
+msgstr "Şu anda {count} yanıt aldınız."
 
 #: surveys/models.py:50
 msgid "Consent Form"
-msgstr ""
+msgstr "Onay Formu"
 
 #: surveys/models.py:51
 msgid ""
 "The content of the consent form shown to users. You can use HTML for "
 "formatting."
-msgstr ""
+msgstr "Kullanıcıların gördüğü onay formu içeriği. Biçimlendirme için HTML kullanabilirsiniz."
 
 #: surveys/models.py:57 surveys/models.py:93
 msgid "name"
-msgstr "name"
+msgstr "Ad  "
 
 #: surveys/models.py:58 surveys/models.py:94
 msgid "description"
-msgstr "description"
+msgstr "Açıklama"
 
 #: surveys/models.py:59
 msgid "slug"
-msgstr "slug"
+msgstr "Slug"
 
 #: surveys/models.py:60
 msgid "editable"
-msgstr "editable"
+msgstr "Düzenlenebilir"
 
 #: surveys/models.py:61
 msgid "If False, user can't edit record."
-msgstr "If False, user can't edit record."
+msgstr "Eğer False ise, kullanıcı bu kaydı düzenleyemez."
 
 #: surveys/models.py:62
 msgid "deletable"
-msgstr "deletable"
+msgstr "Silinebilir"
 
 #: surveys/models.py:63
 msgid "If False, user can't delete record."
-msgstr "If False, user can't delete record."
+msgstr "Eğer False ise, kullanıcı bu kaydı silemez."
 
 #: surveys/models.py:64
 msgid "mutiple submissions"
-msgstr "mutiple submissions"
+msgstr "Çoklu gönderim"
 
 #: surveys/models.py:65
 msgid "If True, user can resubmit."
-msgstr "If True, user can resubmit."
+msgstr "Eğer True ise, kullanıcı tekrar gönderim yapabilir."
 
 #: surveys/models.py:66
 msgid "private response"
-msgstr "private response"
+msgstr "Özel yanıt"
 
 #: surveys/models.py:67
 msgid "If True, only admin and owner can access."
-msgstr "If True, only admin and owner can access."
+msgstr "Eğer True ise, yalnızca yönetici ve sahibi bu sayfayı görüntüleyebilir."
 
 #: surveys/models.py:68
 msgid "anonymous submission"
-msgstr "anonymous submission"
+msgstr "Gizli gönderim"
 
 #: surveys/models.py:69
 msgid "If True, user without authentatication can submit."
-msgstr "If True, user without authentatication can submit."
+msgstr "Eğer True ise, kimlik doğrulaması olmayan kullanıcılar gönderim yapabilir."
 
 #: surveys/models.py:70
 msgid "Notification To"
-msgstr ""
+msgstr "Bildirim Alıcısı"
 
 #: surveys/models.py:71
 msgid "Enter your email to be notified when the form is submitted"
-msgstr ""
+msgstr "Form gönderildiğinde bildirim almak için e-posta adresinizi girin"
 
 #: surveys/models.py:72
 msgid "Success Page Content"
-msgstr ""
+msgstr "Başarı Sayfası İçeriği"
 
 #: surveys/models.py:79 surveys/models.py:124 surveys/models.py:181
 msgid "survey"
-msgstr "survey"
+msgstr "Anket"
 
 #: surveys/models.py:80
 msgid "surveys"
-msgstr "surveys"
+msgstr "Anketler"
 
 #: surveys/models.py:95
 msgid "ordering"
-msgstr ""
+msgstr "Sıralama"
 
 #: surveys/models.py:99
-#, fuzzy
-#| msgid "description"
 msgid "section"
-msgstr "description"
+msgstr "Bölüm"
 
 #: surveys/models.py:100
-#, fuzzy
-#| msgid "questions"
 msgid "sections"
-msgstr "questions"
+msgstr "Bölümler"
 
 #: surveys/models.py:108 surveys/utils.py:63
 msgid "Text"
-msgstr "Text"
+msgstr "Metin"
 
 #: surveys/models.py:109 surveys/utils.py:68
 msgid "Number"
-msgstr "Number"
+msgstr "Sayı"
 
 #: surveys/models.py:110 surveys/utils.py:73
 msgid "Radio"
-msgstr "Radio"
+msgstr "Radyo"
 
 #: surveys/models.py:111 surveys/utils.py:78
 msgid "Select"
-msgstr "Select"
+msgstr "Seçin"
 
 #: surveys/models.py:112 surveys/utils.py:83
 msgid "Multi Select"
-msgstr "Multi Select"
+msgstr "Çoklu Seçin"
 
 #: surveys/models.py:113 surveys/utils.py:88
 msgid "Text Area"
-msgstr "Text Area"
+msgstr "Metin Alanı"
 
 #: surveys/models.py:114 surveys/utils.py:93
 msgid "URL"
@@ -323,365 +306,340 @@ msgstr "URL"
 
 #: surveys/models.py:115 surveys/utils.py:98
 msgid "Email"
-msgstr "Email"
+msgstr "E-posta"
 
 #: surveys/models.py:116 surveys/utils.py:103
 msgid "Date"
-msgstr "Date"
+msgstr "Tarih"
 
 #: surveys/models.py:117 surveys/utils.py:108
 msgid "Rating"
-msgstr "Rating"
+msgstr "Değerlendirme"
 
 #: surveys/models.py:121
 msgid "key"
-msgstr "key"
+msgstr "Anahtar"
 
 #: surveys/models.py:122
 msgid ""
 "Unique key for this question, fill in the blank if you want to use for "
 "automatic generation."
-msgstr ""
-"Unique key for this question, fill in the blank if you want to use for "
-"automatic generation."
+msgstr "Otomatik oluşturma için boş bırakın."
 
 #: surveys/models.py:125
 msgid "label"
-msgstr "label"
+msgstr "Etiket"
 
 #: surveys/models.py:125
 msgid "Enter your question in here."
-msgstr "Enter your question in here."
+msgstr "Sorunuzu buraya girin."
 
 #: surveys/models.py:126
 msgid "type of input field"
-msgstr "type of input field"
+msgstr "Giriş alanı tipi"
 
 #: surveys/models.py:128 surveys/models.py:141
 msgid "choices"
-msgstr "choices"
+msgstr "Seçenekler"
 
 #: surveys/models.py:131
 msgid ""
 "If type of field is radio, select, or multi select, fill in the options "
 "separated by commas. Ex: Male, Female."
-msgstr ""
-"If type of field is radio, select, or multi select, fill in the options "
-"separated by commas. Ex: Male, Female."
+msgstr "Seçenekleri virgülle ayırarak girin. Örn: Erkek, Kadın."
 
 #: surveys/models.py:135
 msgid "help text"
-msgstr "help text"
+msgstr "Yardım Metni"
 
 #: surveys/models.py:137
 msgid "You can add a help text in here."
-msgstr "You can add a help text in here."
+msgstr "Yardım metni ekleyebilirsiniz."
 
 #: surveys/models.py:139
 msgid "required"
-msgstr "required"
+msgstr "Zorunlu"
 
 #: surveys/models.py:140
 msgid "If True, the user must provide an answer to this question."
-msgstr "If True, the user must provide an answer to this question."
+msgstr "Eğer True ise, kullanıcı bu soruyu cevaplamak zorundadır."
 
 #: surveys/models.py:142
 msgid "Defines the question order within the surveys."
-msgstr "Defines the question order within the surveys."
+msgstr "Anketler içindeki soru sırasını tanımlar."
 
 #: surveys/models.py:144
 msgid "include other option"
-msgstr ""
+msgstr "Diğer seçeneği dahil et"
 
 #: surveys/models.py:146
 msgid "If True, adds an 'Other' option with text input for radio buttons"
-msgstr ""
+msgstr "Eğer True ise, radyo düğmelerine metin girişi içeren 'Diğer' seçeneği eklenir"
 
 #: surveys/models.py:149
-#, fuzzy
-#| msgid "help text"
 msgid "hover text"
-msgstr "help text"
+msgstr "Hemen üzerine gelindiğinde görüntülenen metin"
 
 #: surveys/models.py:153
 msgid "This text will be shown when hovering over the question."
-msgstr ""
+msgstr "Bu metin, soru üzerine gelindiğinde görüntülenir."
 
 #: surveys/models.py:164 surveys/models.py:203 surveys/models.py:239
 msgid "question"
-msgstr "question"
+msgstr "Soru"
 
 #: surveys/models.py:165
 msgid "questions"
-msgstr "questions"
+msgstr "Sorular"
 
 #: surveys/models.py:182
 msgid "user"
-msgstr "user"
+msgstr "Kullanıcı"
 
 #: surveys/models.py:185 surveys/models.py:205
 msgid "user answer"
-msgstr "user answer"
+msgstr "Kullanıcı Yanıtı"
 
 #: surveys/models.py:186
 msgid "user answers"
-msgstr "user answers"
+msgstr "Kullanıcı Yanıtları"
 
 #: surveys/models.py:204
 msgid "value"
-msgstr "value"
+msgstr "Değer"
 
 #: surveys/models.py:204
 msgid "The value of the answer given by the user."
-msgstr "The value of the answer given by the user."
+msgstr "Kullanıcı tarafından verilen yanıtın değeri."
 
 #: surveys/models.py:208
 msgid "answer"
-msgstr "answer"
+msgstr "Yanıt"
 
 #: surveys/models.py:209
 msgid "answers"
-msgstr "answers"
+msgstr "Yanıtlar"
 
 #: surveys/models.py:240
 msgid "terms"
-msgstr ""
+msgstr "Koşullar"
 
 #: surveys/summary.py:267
 msgid "No summary"
-msgstr "No summary"
+msgstr "Özet yok"
 
 #: surveys/summary.py:267
-#, fuzzy, python-format
-#| msgid "Summary is available only for input type: %(input_types)s"
+#, python-format
 msgid "Summary is available only for input type: %ss"
-msgstr "Summary is available only for input type: %s"
+msgstr "Özet yalnızca giriş tipi: %s için kullanılabilir"
 
 #: surveys/templates/surveys/admins/form.html:43
 #: surveys/templates/surveys/admins/section_form.html:24
 #: surveys/templates/surveys/form.html:105
 msgid "Submit"
-msgstr "Submit"
+msgstr "Gönder"
 
 #: surveys/templates/surveys/admins/form_preview.html:20
-#, fuzzy
-#| msgid "question"
 msgid "Question"
-msgstr "Question"
+msgstr "Soru"
 
 #: surveys/templates/surveys/admins/form_preview.html:51
-#, fuzzy
-#| msgid "questions"
 msgid "Sections"
-msgstr "questions"
+msgstr "Bölümler"
 
 #: surveys/templates/surveys/admins/form_preview.html:171
 msgid "An error occured!"
-msgstr "An error occured!"
+msgstr "Bir hata oluştu!"
 
 #: surveys/templates/surveys/admins/survey_list.html:10
 msgid "Create a survey"
-msgstr "Create a survey"
+msgstr "Bir anket oluştur"
 
 #: surveys/templates/surveys/answer_list.html:14
 msgid "Result"
-msgstr "Result"
+msgstr "Sonuç"
 
 #: surveys/templates/surveys/components/empty_state.html:4
 msgid "There's nothing here..."
-msgstr "There's nothing here..."
+msgstr "Burada hiçbir şey yok..."
 
 #: surveys/templates/surveys/components/empty_state.html:8
 msgid "Created survey will appear here, try creating one!"
-msgstr "Created survey will appear here, try creating one!"
+msgstr "Oluşturulan anket burada görünecektir, bir tane oluşturmayı deneyin!"
 
 #: surveys/templates/surveys/components/header_nav.html:10
 msgid "Home"
-msgstr "Home"
+msgstr "Anasayfa"
 
 #: surveys/templates/surveys/components/header_nav.html:15
 #: surveys/templates/surveys/components/header_nav.html:50
 msgid "Surveys"
-msgstr "Surveys"
+msgstr "Anketler"
 
 #: surveys/templates/surveys/components/header_nav.html:16
 #: surveys/templates/surveys/components/header_nav.html:53
 msgid "About"
-msgstr "About"
+msgstr "Hakkında"
 
 #: surveys/templates/surveys/components/modal_choice_field_type.html:22
 msgid "Type Field"
-msgstr ""
+msgstr "Alan Tipi"
 
 #: surveys/templates/surveys/components/modal_choice_field_type.html:70
 #: surveys/templates/surveys/components/modal_delete.html:58
 msgid "Close"
-msgstr "Close"
+msgstr "Kapat"
 
 #: surveys/templates/surveys/components/modal_delete.html:21
 msgid "Confirmation"
-msgstr "Confirmation"
+msgstr "Onay"
 
 #: surveys/templates/surveys/components/modal_delete.html:46
 #, python-format
 msgid "Are you sure to delete %(html)s?"
-msgstr "Are you sure to delete %(html)s?"
+msgstr "Bu %(html)s'yi silmek istediğinizden emin misiniz?"
 
 #: surveys/templates/surveys/components/modal_delete.html:65
 msgid "Yes"
-msgstr "Yes"
+msgstr "Evet"
 
 #: surveys/templates/surveys/components/search_form.html:7
 msgid "Search..."
-msgstr ""
+msgstr "Ara..."
 
 #: surveys/templates/surveys/components/section_welcome.html:8
-#, fuzzy
-#| msgid "Welcome to the Django Form Survey"
 msgid "Welcome to the CyberSec4OT Survey Page"
-msgstr "Welcome to the Django Form Survey"
+msgstr "CyberSec4OT Anket Sayfasına Hoşgeldiniz"
 
 #: surveys/templates/surveys/components/section_welcome.html:12
-#, fuzzy
-#| msgid "Making forms easier"
 msgid "Making CyberSec4OT platform easier!"
-msgstr "Making forms easier"
+msgstr "CyberSec4OT platformunu daha kolay hale getiriyoruz!"
 
 #: surveys/templates/surveys/consent_form.html:15
 msgid "I have read and agree to the terms above."
-msgstr ""
+msgstr "Bu koşulları okudum ve kabul ediyorum."
 
 #: surveys/templates/surveys/consent_form.html:19
-#, fuzzy
-#| msgid "Edit Survey"
 msgid "Proceed to Survey"
-msgstr "Edit Survey"
+msgstr "Ankete Başla"
 
 #: surveys/templates/surveys/form.html:96
 msgid "Previous"
-msgstr ""
+msgstr "Önceki"
 
 #: surveys/templates/surveys/form.html:100
 msgid "Next"
-msgstr ""
+msgstr "Sonraki"
 
 #: surveys/templates/surveys/master.html:7
 msgid "Survey"
-msgstr "Survey"
+msgstr "Anket"
 
 #: surveys/templates/surveys/success-page.html:17
 msgid "Thank you for completing this survey"
-msgstr ""
+msgstr "Bu anketi tamamladığınız için teşekkür ederiz"
 
 #: surveys/templates/surveys/success-page.html:23
 msgid ""
 "I really appreciate your effort and the time you devoted to filling the "
 "questionnaire. Your answers will help us."
-msgstr ""
+msgstr "Yanıtlarınız bize yardımcı olacaktır."
 
 #: surveys/templates/surveys/success-page.html:29
 msgid "Back"
-msgstr ""
+msgstr "Geri"
 
 #: surveys/templates/surveys/widgets/inline_choices.html:86
 msgid "at least two choices"
-msgstr "at least two choices"
+msgstr "En az iki seçenek"
 
 #. Translators: String used to replace omitted page numbers in elided page
 #. range generated by paginators, e.g. [1, 2, '…', 5, 6, 7, '…', 9, 10].
 #: surveys/utils.py:25
 msgid "…"
-msgstr "…"
+msgstr ""
 
 #: surveys/validators.py:78
-#, fuzzy, python-format
-#| msgid "%(value)s is not a number."
+#, python-format
 msgid "%ss is not a number."
-msgstr "%s is not a number."
+msgstr "%s sayı değildir."
 
 #: surveys/validators.py:83
-#, fuzzy
-#| msgid "Value cannot be greater than 5."
 msgid "Value cannot be greater than maximum allowed number of ratings."
-msgstr "Value cannot be greater than 5."
+msgstr "Değer en fazla izin verilen değerden büyük olamaz."
 
 #: surveys/validators.py:88
 msgid "Value cannot be less than 1."
-msgstr "Value cannot be less than 1."
+msgstr "Değer en az 1 olamaz."
 
 #: surveys/validators.py:100
 msgid "Invalid email"
-msgstr ""
+msgstr "Geçersiz e-posta"
 
 #: surveys/validators.py:105
 #, python-brace-format
 msgid ""
 "Your email is not allowed. Allowed email domains are {self.terms."
 "email_domain}"
-msgstr ""
+msgstr "E-postanız izin verilmedi. İzin verilen e-posta alanları {self.terms."
+"email_domain}"
 
 #: surveys/validators.py:108
 #, python-brace-format
 msgid ""
 "Your email is not allowed. Email domains that are not allowed are {self."
 "terms.email_domain}"
-msgstr ""
+msgstr "E-postanız izin verilmedi. İzin verilmeyen e-posta alanları {self."
+"terms.email_domain}"
 
 #: surveys/views.py:87
 msgid "Something went wrong."
-msgstr "Something went wrong."
+msgstr "Bir şeyler yanlış gitti."
 
 #: surveys/views.py:100
 msgid "This survey does not have a consent form."
-msgstr ""
+msgstr "Bu anket bir onay formu içermiyor."
 
 #: surveys/views.py:113 surveys/views.py:128
 msgid "You must accept the consent form to proceed."
-msgstr ""
+msgstr "Bu ankete başlamak için onay formunu kabul etmelidir."
 
 #: surveys/views.py:120
 msgid "Add Survey"
-msgstr "Add Survey"
+msgstr "Anket Ekle"
 
 #: surveys/views.py:133
 msgid "Sorry, you must be logged in to fill out the survey."
-msgstr "Sorry, you must be logged in to fill out the survey."
+msgstr "Üzgünüz, bu anketi doldurmak için giriş yapmalısınız."
 
 #: surveys/views.py:139
-#, fuzzy
-#| msgid "You have submitted out this survey."
 msgid "You have already submitted this survey."
-msgstr "You have submitted out this survey."
+msgstr "Bu anketi zaten doldurdunuz."
 
 #: surveys/views.py:174
 msgid "You can't edit this survey. You don't have permission."
-msgstr "You can't edit this survey. You don't have permission."
+msgstr "Bu anketi düzenlemek için yetkiniz yok."
 
 #: surveys/views.py:202
 msgid "You can't delete this survey. You don't have permission."
-msgstr "You can't delete this survey. You don't have permission."
+msgstr "Bu anketi silmek için yetkiniz yok."
 
 #: surveys/views.py:209
 msgid "Answer succesfully deleted."
-msgstr "Answer succesfully deleted."
+msgstr "Yanıt başarıyla silindi."
 
 #: surveys/views.py:216
-#, fuzzy
-#| msgid "Survey Result"
 msgid "Survey Detail"
-msgstr "Survey Result"
+msgstr "Anket Detayı"
 
 #: surveys/views.py:222 surveys/views.py:255
 msgid "You can't access this page. You don't have permission."
-msgstr "You can't access this page. You don't have permission."
+msgstr "Bu sayfayı erişemezsiniz. Yetkiniz yok."
 
 #: surveys/views.py:241
 msgid "Survey Result"
-msgstr "Survey Result"
+msgstr "Anket Sonuçları"
 
 #: surveys/views.py:279
 msgid "Submitted Successfully"
-msgstr ""
-
-#~ msgid "Cancel"
-#~ msgstr "Cancel"
+msgstr "Başarıyla Gönderildi"

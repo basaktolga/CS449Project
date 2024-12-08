@@ -15,6 +15,17 @@ from django.core.mail import send_mail
 from django.conf import settings
 from functools import wraps
 from datetime import datetime, timedelta
+from django.utils import translation
+
+def set_language(request):
+    lang = request.GET.get('lang', settings.LANGUAGE_CODE)
+    if lang in [code for code, name in settings.LANGUAGES]:
+        request.session[settings.LANGUAGE_SESSION_KEY] = lang
+        translation.activate(lang)
+        response = redirect(request.META.get('HTTP_REFERER', '/'))
+        response.set_cookie(settings.LANGUAGE_COOKIE_NAME, lang)
+        return response
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
 def faq(request):
     # Render the dashboard template and pass the request.user object

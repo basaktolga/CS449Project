@@ -1,0 +1,317 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-05 16:28+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: CyberSec4OT/settings.py:125
+msgid "English"
+msgstr "İngilizce"
+
+#: CyberSec4OT/settings.py:126
+msgid "Turkish"
+msgstr "Türkçe"
+
+#: templates/base.html:9
+msgid "Default Title"
+msgstr ""
+
+#: templates/base.html:22
+msgid "Open sidebar"
+msgstr ""
+
+#: templates/base.html:29 templates/base.html:230 templates/base.html:271
+#: templates/base_unauth.html:49 templates/base_unauth.html:155
+#: templates/base_unauth.html:196
+msgid "CyberSec4OT"
+msgstr "CyberSec4OT"
+
+#: templates/base.html:48 templates/base.html:57
+msgid "Notifications"
+msgstr ""
+
+#: templates/base.html:79
+msgid "Open user menu"
+msgstr ""
+
+#: templates/base.html:91 templates/base.html:123
+msgid "Dashboard"
+msgstr ""
+
+#: templates/base.html:94 templates/base.html:191
+msgid "Settings"
+msgstr "Ayarlar"
+
+#: templates/base.html:100
+#, fuzzy
+#| msgid "Sign Up"
+msgid "Sign out"
+msgstr "Kayıt Ol"
+
+#: templates/base.html:129 templates/base.html:238
+#: templates/base_unauth.html:163
+msgid "Courses"
+msgstr "Kurslar"
+
+#: templates/base.html:136
+#, fuzzy
+#| msgid "Available Courses"
+msgid "All Courses"
+msgstr "Mevcut Kurslar"
+
+#: templates/base.html:139
+msgid "Available Courses"
+msgstr "Mevcut Kurslar"
+
+#: templates/base.html:142
+#, fuzzy
+#| msgid "Courses"
+msgid "Owned Courses"
+msgstr "Kurslar"
+
+#: templates/base.html:149 templates/base.html:241
+#: templates/base_unauth.html:166
+msgid "Learning Paths"
+msgstr "Öğrenme Yolları"
+
+#: templates/base.html:155
+msgid "Badges"
+msgstr "Rozetler"
+
+#: templates/base.html:161
+#, fuzzy
+#| msgid "Browse Certificates"
+msgid "Certificates"
+msgstr "Sertifikalara Göz Atın"
+
+#: templates/base.html:167
+msgid "Friends"
+msgstr "Arkadaşlar"
+
+#: templates/base.html:173
+msgid "Leaderboard"
+msgstr "Sıralama"
+
+#: templates/base.html:179
+msgid "Help & Support"
+msgstr "Yardım & Destek"
+
+#: templates/base.html:185 templates/base_unauth.html:84
+msgid "FAQ"
+msgstr "SSS"
+
+#: templates/base.html:198
+msgid "Account"
+msgstr "Hesap"
+
+#: templates/base.html:201
+msgid "Activity Log"
+msgstr "Etkinlik Kaydı"
+
+#: templates/base.html:208
+msgid "Billing"
+msgstr "Fatura"
+
+#: templates/base.html:235 templates/base_unauth.html:160
+msgid "Resources"
+msgstr "Kaynaklar"
+
+#: templates/base.html:246 templates/base_unauth.html:171
+msgid "Follow us"
+msgstr "Bizi Takip Edin"
+
+#: templates/base.html:257 templates/base_unauth.html:182
+msgid "Legal"
+msgstr "Hukuki"
+
+#: templates/base.html:260 templates/base_unauth.html:185
+msgid "Privacy Policy"
+msgstr "Gizlilik Politikası"
+
+#: templates/base.html:263 templates/base_unauth.html:188
+msgid "Terms & Conditions"
+msgstr "Şartlar & Koşullar"
+
+#: templates/base.html:271 templates/base_unauth.html:196
+msgid "All Rights Reserved."
+msgstr "Tüm Hakları Saklıdır."
+
+#: templates/base.html:277 templates/base_unauth.html:202
+msgid "Twitter page"
+msgstr "Twitter Sayfası"
+
+#: templates/base.html:283 templates/base_unauth.html:208
+msgid "GitHub account"
+msgstr "GitHub Hesabı"
+
+#: templates/base.html:289 templates/base_unauth.html:214
+msgid "Dribbble account"
+msgstr "Dribbble Hesabı"
+
+#: templates/base_unauth.html:9
+msgid "Welcome"
+msgstr "Hoşgeldiniz"
+
+#: templates/base_unauth.html:56
+msgid "Request a Demo"
+msgstr "Demo İsteyin"
+
+#: templates/base_unauth.html:61
+msgid "Accessibility"
+msgstr "Erişilebilirlik"
+
+#: templates/base_unauth.html:69
+msgid "Protanopia"
+msgstr ""
+
+#: templates/base_unauth.html:72
+msgid "Deuteranopia"
+msgstr ""
+
+#: templates/base_unauth.html:75
+msgid "Tritanopia"
+msgstr ""
+
+#: templates/base_unauth.html:78
+msgid "Default"
+msgstr ""
+
+#: templates/base_unauth.html:85
+msgid "About"
+msgstr "Hakkımızda"
+
+#: templates/base_unauth.html:86
+msgid "Browse Certificates"
+msgstr "Sertifikalara Göz Atın"
+
+#: templates/base_unauth.html:87 templates/home.html:134
+msgid "Contact Us"
+msgstr "Bize Ulaşın"
+
+#: templates/base_unauth.html:130
+msgid "Login"
+msgstr "Giriş Yap"
+
+#: templates/base_unauth.html:131
+msgid "Sign Up"
+msgstr "Kayıt Ol"
+
+#: templates/base_unauth.html:174
+msgid "Github"
+msgstr ""
+
+#: templates/base_unauth.html:177
+msgid "LinkedIn"
+msgstr "LinkedIn"
+
+#: templates/home.html:5
+msgid "Home"
+msgstr "Ana Sayfa"
+
+#: templates/home.html:13
+msgid "Secure Your OT Infrastructure"
+msgstr "OT Altyapınızı Güvenli Hale Getirin"
+
+#: templates/home.html:14
+msgid ""
+"Master cybersecurity best practices for Operational Technology systems. Join "
+"our comprehensive training platform designed for industry professionals and "
+"students."
+msgstr ""
+"Operasyonel Teknoloji sistemleri için siber güvenlik en iyi uygulamalarında "
+"uzmanlaşın. Endüstri profesyonelleri ve öğrenciler için tasarlanmış kapsamlı "
+"eğitim platformumuza katılın."
+
+#: templates/home.html:17
+msgid "Get started"
+msgstr "Başlayın"
+
+#: templates/home.html:23
+msgid "Learn more"
+msgstr "Daha Fazlasını Öğrenin"
+
+#: templates/home.html:34
+msgid "Start the journey according to your needs."
+msgstr "İhtiyaçlarınıza göre başlangıç yapın."
+
+#: templates/home.html:34
+msgid "Improve your cyber-skills and gain awareness against cyber-threats."
+msgstr ""
+
+#: templates/home.html:48
+msgid "How to quickly deploy a static website"
+msgstr "Statik bir web sitesini nasıl hızlı bir şekilde dağıtılacağını öğrenin"
+
+#: templates/home.html:49 templates/home.html:66 templates/home.html:81
+msgid ""
+"Static websites are now used to bootstrap lots of websites and are becoming "
+"the basis for a variety of tools that even influence both web designers and "
+"developers."
+msgstr ""
+"Statik web siteleri şimdi birçok web sitesini başlatmak ve birçok araçların "
+"temelini oluşturmak için kullanılıyor ve hem web tasarımcıları hem de "
+"geliştiricileri etkileyen birçok araçların temelini oluşturmak için "
+"kullanılıyor."
+
+#: templates/home.html:51 templates/home.html:67 templates/home.html:82
+msgid "Read more"
+msgstr "Daha Fazla Oku"
+
+#: templates/home.html:65
+msgid "Start with Flowbite Design System"
+msgstr "Flowbite Tasarım Sistemi ile Başlayın"
+
+#: templates/home.html:80
+msgid "Best React libraries around the web"
+msgstr "Web'deki En İyileri"
+
+#: templates/home.html:102
+msgid ""
+"CyberSec4OT is just awesome. It contains tons of educational resources and "
+"courses starting from awareness to advanced training. Perfect choice for "
+"your next cybersecurity journey."
+msgstr ""
+
+#: templates/home.html:119
+msgid "Hi, I'm Vince! Let's chat about your amazing ideas and projects."
+msgstr ""
+"Merhaba, ben Vince! Size harika fikirlerinizi ve projelerinizi konuşmak "
+"istiyorum."
+
+#: templates/home.html:120
+msgid ""
+"I enjoy translating your thoughts to our diversely skilled team for the best "
+"results"
+msgstr ""
+
+#~ msgid "Contact"
+#~ msgstr "Bize Ulaşın"
+
+#~ msgid "GitHub"
+#~ msgstr "GitHub"
+
+#~ msgid "Get Started"
+#~ msgstr "Başlayın"
+
+#~ msgid "Twitter"
+#~ msgstr "Twitter"
+
+#~ msgid "Dribbble"
+#~ msgstr "Dribbble"
+
+#~ msgid "™"
+#~ msgstr "™"

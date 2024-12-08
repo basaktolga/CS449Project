@@ -81,17 +81,19 @@ function validateForm(event) {
         left: 0;
         width: 100%;
         height: 100%;
-        z-index: 0; /* -1 yapinca footer geliyor fakat style'da cozulmesi gereken bir sikinti var */
+        z-index: 1; /* Changed from 2 to 1 to be below the content */
     }
 
     /* Ensure the login box is above the canvas */
     .relative.z-10 {
-        z-index: 10; /* Bring login box above the canvas */
+        position: relative; /* Added to ensure z-index works */
+        z-index: 20; /* Increased to be above the navbar */
     }
-
+    
     /* Prevent body scroll */
     body {
         overflow: hidden;
     }
+
 </style>
 {% endblock %}

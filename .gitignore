@@ -9,7 +9,6 @@ CyberSec4OT/pycache/*
 education/__pycache__/
 payment/__pycache__/
 surveys/__pycache__/
-surveys/migrations/
 surveys/admins/__pycache__/
 surveys/admins/v2/__pycache__/
 surveys/templatetags/__pycache__/
