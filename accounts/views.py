@@ -759,4 +759,4 @@ def logout_view(request):
     logout(request)
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return JsonResponse({'status': 'success'})
-    return redirect(settings.LOGOUT_REDIRECT_URL)
+    return redirect('/')  # Redirect to homepage instead of logout URL

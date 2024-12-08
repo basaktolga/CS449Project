@@ -3,8 +3,10 @@ const canvasElement = document.createElement('canvas');
 const canvasCtx = canvasElement.getContext('2d');
 
 let isRightWinkDetected = false;
-let isLeftHandRaised = false;
+let waveCount = 0;
+let lastWaveTime = 0;
 const gestureTimeout = 1500; // 1.5 seconds to complete both gestures
+const waveCooldown = 500; // 500ms between waves
 
 function setupGestureLogout() {
     // Style and add video/canvas elements
@@ -67,20 +69,34 @@ function onResults(results) {
         }
     }
 
-    // Check for raised left hand
+    // Check for wave gesture
     if (results.poseLandmarks) {
-        const leftWrist = results.poseLandmarks[15];
-        const leftShoulder = results.poseLandmarks[11];
+        const rightWrist = results.poseLandmarks[16];
+        const rightShoulder = results.poseLandmarks[12];
+        const currentTime = Date.now();
         
-        if (leftWrist && leftShoulder && leftWrist.y < leftShoulder.y) {
-            isLeftHandRaised = true;
-            setTimeout(() => { isLeftHandRaised = false; }, gestureTimeout);
+        // Detect wave motion (hand moving side to side above shoulder)
+        if (rightWrist && rightShoulder && 
+            rightWrist.y < rightShoulder.y && 
+            currentTime - lastWaveTime > waveCooldown) {
+            
+            // Track wave count
+            waveCount++;
+            lastWaveTime = currentTime;
+            
+            // Reset wave count after timeout
+            setTimeout(() => {
+                if (waveCount > 0) waveCount--;
+            }, gestureTimeout);
         }
     }
 
-    // If both gestures are detected within the timeout period
-    if (isRightWinkDetected && isLeftHandRaised) {
+    // If right wink and two waves are detected within the timeout period
+    if (isRightWinkDetected && waveCount >= 2) {
         handleLogoutGesture();
+        // Reset counters
+        waveCount = 0;
+        isRightWinkDetected = false;
     }
 
     // Draw landmarks for visual feedback
@@ -95,20 +111,38 @@ function onResults(results) {
 function handleLogoutGesture() {
     // Reset gesture flags
     isRightWinkDetected = false;
-    isLeftHandRaised = false;
+    waveCount = 0;
 
     // Show confirmation modal
     const modal = document.getElementById('logout-confirm-modal');
     modal.classList.remove('hidden');
     
-    // Auto logout after 3 seconds if not canceled
-    const logoutTimer = setTimeout(() => {
-        window.location.href = logoutUrl;
-    }, 3000);
+    let logoutTimer;
 
     // Allow cancellation
-    document.getElementById('cancel-logout').onclick = () => {
+    const cancelButton = document.getElementById('cancel-logout');
+    const modalContent = modal.querySelector('.relative');
+
+    // Handle modal backdrop click
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            clearTimeout(logoutTimer);
+            modal.classList.add('hidden');
+        }
+    });
+
+    // Handle cancel button click
+    cancelButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
         clearTimeout(logoutTimer);
         modal.classList.add('hidden');
-    };
+    });
+
+    // Auto logout after 3 seconds if not canceled
+    logoutTimer = setTimeout(() => {
+        // Use the dashboard URL as fallback if logoutUrl is not properly set
+        const dashboardUrl = '/';
+        window.location.href = logoutUrl || dashboardUrl;
+    }, 3000);
 } 
