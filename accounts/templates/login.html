@@ -8,7 +8,7 @@
 
 <canvas id="fluid-canvas"></canvas>
 
-<div class="relative z-10 max-w-md mx-auto mt-10 p-8 bg-white rounded-lg shadow-lg dark:bg-gray-800">
+<div class="relative z-10 max-w-4xl mx-auto mt-40 p-8 bg-white rounded-lg shadow-lg dark:bg-gray-800">
     <h2 class="text-2xl font-bold mb-5 text-center text-gray-900 dark:text-white">Login</h2>
 
     {% if messages %}
@@ -19,40 +19,47 @@
         {% endfor %}
     {% endif %}
 
-    <form method="post" onsubmit="return validateForm(event)">
-        {% csrf_token %}
+    <div class="flex gap-8">
+        <!-- Left Column: Login Form -->
+        <div class="flex-1">
+            <form method="post" onsubmit="return validateForm(event)">
+                {% csrf_token %}
 
-        <!-- Username Field -->
-        <div class="mb-6">
-            <label for="username" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Username
-            </label>
-            <input type="text" id="username" name="username" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
+                <!-- Username Field -->
+                <div class="mb-6">
+                    <label for="username" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Username
+                    </label>
+                    <input type="text" id="username" name="username" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
+                </div>
+
+                <!-- Password Field -->
+                <div class="mb-6">
+                    <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Password
+                    </label>
+                    <input type="password" id="password" name="password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
+                </div>
+
+                <input type="hidden" id="captcha-solved" name="captcha-solved" value="false">
+
+                <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Login</button>
+            </form>
+
+            <div class="mt-4 text-sm text-center text-gray-600 dark:text-gray-400">
+                Don't have an account? <a href="{% url 'accounts:register' %}" class="text-blue-600 hover:underline dark:text-blue-500">Register here</a>.
+            </div>
         </div>
 
-        <!-- Password Field -->
-        <div class="mb-6">
-            <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Password
-            </label>
-            <input type="password" id="password" name="password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
+        <!-- Right Column: CAPTCHA -->
+        <div class="flex-1">
+            <div id="face-captcha-container" class="flex flex-col items-center">
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    Smile to verify you're human
+                </p>
+                <div id="captcha-message" class="text-sm mb-2"></div>
+            </div>
         </div>
-
-        <!-- Face CAPTCHA Container -->
-        <div id="face-captcha-container" class="mb-4">
-            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                Wink your left eye to verify you're human
-            </p>
-            <div id="captcha-message" class="text-sm"></div>
-        </div>
-        
-        <input type="hidden" id="captcha-solved" name="captcha-solved" value="false">
-
-        <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Login</button>
-    </form>
-
-    <div class="mt-4 text-sm text-center text-gray-600 dark:text-gray-400">
-        Don't have an account? <a href="{% url 'accounts:register' %}" class="text-blue-600 hover:underline dark:text-blue-500">Register here</a>.
     </div>
 </div>
 
@@ -77,24 +84,33 @@ function validateForm(event) {
 <!-- Fluid Canvas Script -->
 <script src="{% static 'fluid/fluid_simulation.js' %}"></script>
 <style>
-    /* Make the canvas cover the whole screen */
     #fluid-canvas {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        z-index: 0; /* -1 yapinca footer geliyor fakat style'da cozulmesi gereken bir sikinti var */
+        z-index: 0;
     }
 
-    /* Ensure the login box is above the canvas */
     .relative.z-10 {
-        z-index: 10; /* Bring login box above the canvas */
+        z-index: 10;
+        position: relative;
     }
 
-    /* Prevent body scroll */
     body {
         overflow: hidden;
+    }
+
+    /* New styles for video and canvas */
+    .input_video, .output_canvas {
+        width: 320px;
+        height: 240px;
+        margin-bottom: 10px;
+    }
+
+    #face-captcha-container {
+        width: 320px;
     }
 </style>
 {% endblock %}
