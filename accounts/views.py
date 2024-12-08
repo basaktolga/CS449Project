@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from .forms import CustomUserCreationForm, TicketForm, TicketResponseForm
@@ -678,20 +678,26 @@ def base_view(request):
 
 def login_view(request):
     if request.method == 'POST':
-        # Verify reCAPTCHA
-        recaptcha_response = request.POST.get('g-recaptcha-response')
-        data = {
-            'secret': '6LdpXVsqAAAAAOQsUZcpCcEY5CGO90lOdF_GJH-P',  # Your secret key
-            'response': recaptcha_response
-        }
-        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
-        result = r.json()
+        # Verify eye-tracking CAPTCHA
+        captcha_solved = request.POST.get('captcha-solved') == 'true'
         
-        if not result['success']:
-            messages.error(request, 'Please complete the reCAPTCHA.')
+        if not captcha_solved:
+            messages.error(request, 'Please complete the eye-tracking CAPTCHA.')
             return render(request, 'login.html')
         
         # Continue with your existing login logic
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
+            return redirect('education:user_dashboard')
+        else:
+            messages.error(request, 'Invalid username or password.')
+    
+    return render(request, 'login.html')
 
 def register_view(request):
     if request.method == 'POST':
@@ -748,3 +754,9 @@ def resend_verification_code(request):
             messages.error(request, f"Error sending new verification code: {str(e)}", extra_tags='error')
             
     return redirect('accounts:verify_action')
+
+def logout_view(request):
+    logout(request)
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'status': 'success'})
+    return redirect(settings.LOGOUT_REDIRECT_URL)
