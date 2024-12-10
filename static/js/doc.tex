@@ -1,0 +1,169 @@
+
+\documentclass[12pt]{article}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\definecolor{lightgray}{gray}{0.95}
+\lstset{
+  backgroundcolor=\color{lightgray},
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{green!60!black},
+  stringstyle=\color{red},
+  showstringspaces=false,
+  breaklines=true,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny,
+  xleftmargin=15pt,
+}
+
+\title{Gesture-Based Interaction System Using MediaPipe}
+\author{Doruk Dülger, Ulaş Meriç, Tolga Başak}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Overview of the System}
+This project implements a gesture-based interaction system using \textbf{MediaPipe} for real-time smile detection. The system is integrated into a web-based login and registration platform to enhance user security through a smile-based CAPTCHA verification.
+
+Additionally, the system implements a gesture-based logout mechanism that combines facial expressions (right wink) with hand gestures (open palm hold) to provide a secure and intuitive way to log out of the system.
+
+\subsection{Objective}
+The objective is to detect a smile using facial landmarks and validate the user's action by triggering a CAPTCHA success event. The interaction is visually confirmed on the interface.
+
+\subsection{Gesture Chosen}
+\textbf{Smile Detection:} A facial gesture detected using key landmarks around the mouth, calculated in real-time.
+
+\subsection{Landmarks Used}
+\begin{itemize}
+    \item Upper lip center (landmark 13)
+    \item Lower lip center (landmark 14)
+    \item Left mouth corner (landmark 61)
+    \item Right mouth corner (landmark 291)
+\end{itemize}
+
+For the logout gesture detection:
+\begin{itemize}
+    \item Right eye landmarks (159 for upper, 145 for lower)
+    \item Hand landmarks for palm detection:
+        \begin{itemize}
+            \item Palm base (landmark 0)
+            \item Thumb tip (landmark 4)
+            \item Index tip (landmark 8)
+            \item Middle tip (landmark 12)
+            \item Ring tip (landmark 16)
+            \item Pinky tip (landmark 20)
+        \end{itemize}
+\end{itemize}
+
+\subsection{Interaction Triggered}
+When a valid smile is detected:
+\begin{itemize}
+    \item The CAPTCHA is marked as solved.
+    \item A success message is displayed, confirming the action.
+\end{itemize}
+
+\subsection{Gesture-Based Logout:} A combination of right eye wink and open palm hold for 1.5 seconds triggers the logout sequence.
+
+\section{Implementation Details}
+This section explains how the system works, including the calculation of smile gestures and code implementations.
+
+\subsection{Integration of MediaPipe}
+The \textbf{MediaPipe Face Mesh} library is used for real-time detection of facial landmarks. The video feed is processed frame-by-frame, and specific mouth-related landmarks are analyzed to determine if the user is smiling.
+
+\subsection{Landmark Calculation}
+The detection logic is based on:
+\begin{itemize}
+    \item \textbf{Smile Ratio:} Calculated as:
+    \[
+    \text{Smile Ratio} = \frac{\text{Mouth Width}}{\text{Vertical Opening}}
+    \]
+    \item \textbf{Corner Lift  :} Measured as the distance between the upper lip center and the average height of the mouth corners.
+\end{itemize}
+
+If the smile ratio exceeds 3.3 and the corner lift is greater than 0.015, a smile is detected.
+
+\subsection{Code Explanation}
+\textbf{Login Template (login.html):} This Django template includes a smile-based CAPTCHA and fluid simulation background.
+
+\begin{lstlisting}[language=HTML, caption=Login Template (login.html)]
+<canvas id="fluid-canvas"></canvas>
+
+<div class="relative z-10 max-w-4xl mx-auto mt-40 p-8 bg-white rounded-lg">
+    <h2 class="text-2xl font-bold mb-5 text-center">Login</h2>
+    <form method="post" onsubmit="return validateForm(event)">
+        {% csrf_token %}
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+        <input type="hidden" id="captcha-solved" name="captcha-solved" value="false">
+        <button type="submit">Login</button>
+    </form>
+</div>
+<script src="{% static 'js/face_captcha.js' %}"></script>
+\end{lstlisting}
+
+\textbf{JavaScript for CAPTCHA Detection:} This script processes the video feed and identifies smiles using MediaPipe landmarks.
+
+\begin{lstlisting}[language=JavaScript, caption=CAPTCHA Detection (face\_captcha.js)]
+function setupFaceCaptcha() {
+    const videoElement = document.createElement('video');
+    const canvasElement = document.createElement('canvas');
+    const faceMesh = new FaceMesh({
+        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+    });
+
+    faceMesh.onResults((results) => {
+        const landmarks = results.multiFaceLandmarks[0];
+        const upperLipCenter = landmarks[13];
+        const lowerLipCenter = landmarks[14];
+        const leftMouthCorner = landmarks[61];
+        const rightMouthCorner = landmarks[291];
+
+        const smileRatio = Math.abs(leftMouthCorner.x - rightMouthCorner.x) /
+                          Math.abs(upperLipCenter.y - lowerLipCenter.y);
+
+        if (smileRatio > 3.3) {
+            document.getElementById('captcha-solved').value = 'true';
+            alert('Smile detected!');
+        }
+    });
+
+    new Camera(videoElement, { onFrame: async () => await faceMesh.send({ image: videoElement }) }).start();
+}
+\end{lstlisting}
+
+\textbf{Fluid Simulation Background:} This enhances the interface visually.
+
+\begin{lstlisting}[language=JavaScript, caption=Fluid Simulation]
+<script src="{% static 'fluid/fluid_simulation.js' %}"></script>
+<style>
+    #fluid-canvas {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        z-index: 0;
+    }
+</style>
+\end{lstlisting}
+
+\section{Group Contributions}
+\begin{itemize}
+    \item \textbf{Doruk Dülger:} Developed the smile detection algorithm and integrated MediaPipe.
+    \item \textbf{Ulaş Meriç:} Designed the fluid simulation background and enhanced the UI.
+    \item \textbf{Tolga Başak:} Worked on backend integration and security features.
+\end{itemize}
+
+\section{Video Demonstration}
+A short video demonstrating the system in action can be accessed at: \href{https://your-video-link.com}{Demo Video}.
+
+\section{GitHub Repository}
+The project repository is available at: \href{https://github.com/your-repo-link}{GitHub Repository}. Commit history reflects contributions from all members.
+
+\end{document}

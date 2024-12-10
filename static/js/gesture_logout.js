@@ -3,10 +3,9 @@ const canvasElement = document.createElement('canvas');
 const canvasCtx = canvasElement.getContext('2d');
 
 let isRightWinkDetected = false;
-let waveCount = 0;
-let lastWaveTime = 0;
-const gestureTimeout = 1500; // 1.5 seconds to complete both gestures
-const waveCooldown = 500; // 500ms between waves
+let palmHoldStartTime = 0;
+const gestureTimeout = 1500; // 1.5 seconds to hold palm
+const palmThreshold = 0.2; // Threshold for detecting open palm
 
 function setupGestureLogout() {
     // Style and add video/canvas elements
@@ -69,49 +68,89 @@ function onResults(results) {
         }
     }
 
-    // Check for wave gesture
-    if (results.poseLandmarks) {
-        const rightWrist = results.poseLandmarks[16];
-        const rightShoulder = results.poseLandmarks[12];
-        const currentTime = Date.now();
+    // Check for open palm and hold
+    if (results.rightHandLandmarks) {
+        const landmarks = results.rightHandLandmarks;
         
-        // Detect wave motion (hand moving side to side above shoulder)
-        if (rightWrist && rightShoulder && 
-            rightWrist.y < rightShoulder.y && 
-            currentTime - lastWaveTime > waveCooldown) {
-            
-            // Track wave count
-            waveCount++;
-            lastWaveTime = currentTime;
-            
-            // Reset wave count after timeout
-            setTimeout(() => {
-                if (waveCount > 0) waveCount--;
-            }, gestureTimeout);
-        }
-    }
+        // Calculate distances between fingertips and palm base
+        const palmBase = landmarks[0];
+        const thumbTip = landmarks[4];
+        const indexTip = landmarks[8];
+        const middleTip = landmarks[12];
+        const ringTip = landmarks[16];
+        const pinkyTip = landmarks[20];
+        
+        // Check if fingers are spread (open palm)
+        const isOpenPalm = checkOpenPalm(palmBase, thumbTip, indexTip, middleTip, ringTip, pinkyTip);
 
-    // If right wink and two waves are detected within the timeout period
-    if (isRightWinkDetected && waveCount >= 2) {
-        handleLogoutGesture();
-        // Reset counters
-        waveCount = 0;
-        isRightWinkDetected = false;
+        if (isOpenPalm) {
+            if (palmHoldStartTime === 0) {
+                palmHoldStartTime = Date.now();
+            } else if (Date.now() - palmHoldStartTime >= gestureTimeout && isRightWinkDetected) {
+                handleLogoutGesture();
+                palmHoldStartTime = 0;
+                isRightWinkDetected = false;
+            }
+        } else {
+            palmHoldStartTime = 0;
+        }
+
+        // Visual feedback for palm detection
+        if (palmHoldStartTime > 0) {
+            const holdProgress = Math.min((Date.now() - palmHoldStartTime) / gestureTimeout, 1);
+            drawPalmFeedback(holdProgress);
+        }
+    } else {
+        palmHoldStartTime = 0;
     }
 
     // Draw landmarks for visual feedback
     drawConnectors(canvasCtx, results.faceLandmarks, FACEMESH_TESSELATION,
         {color: '#C0C0C070', lineWidth: 1});
-    drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS,
-        {color: '#00FF00', lineWidth: 2});
+    if (results.rightHandLandmarks) {
+        drawConnectors(canvasCtx, results.rightHandLandmarks, HAND_CONNECTIONS,
+            {color: '#00FF00', lineWidth: 2});
+    }
     
     canvasCtx.restore();
+}
+
+function checkOpenPalm(palmBase, thumbTip, indexTip, middleTip, ringTip, pinkyTip) {
+    // Calculate average finger spread
+    const fingerTips = [thumbTip, indexTip, middleTip, ringTip, pinkyTip];
+    let totalSpread = 0;
+    
+    for (let i = 0; i < fingerTips.length - 1; i++) {
+        const spread = Math.sqrt(
+            Math.pow(fingerTips[i].x - fingerTips[i + 1].x, 2) +
+            Math.pow(fingerTips[i].y - fingerTips[i + 1].y, 2)
+        );
+        totalSpread += spread;
+    }
+    
+    const avgSpread = totalSpread / 4;
+    
+    // Check if fingers are raised (y position lower than palm base)
+    const fingersRaised = fingerTips.every(tip => tip.y < palmBase.y);
+    
+    return avgSpread > palmThreshold && fingersRaised;
+}
+
+function drawPalmFeedback(progress) {
+    const centerX = canvasElement.width / 2;
+    const centerY = canvasElement.height - 30;
+    
+    canvasCtx.beginPath();
+    canvasCtx.strokeStyle = '#00FF00';
+    canvasCtx.lineWidth = 3;
+    canvasCtx.arc(centerX, centerY, 15, 0, Math.PI * 2 * progress);
+    canvasCtx.stroke();
 }
 
 function handleLogoutGesture() {
     // Reset gesture flags
     isRightWinkDetected = false;
-    waveCount = 0;
+    palmHoldStartTime = 0;
 
     // Show confirmation modal
     const modal = document.getElementById('logout-confirm-modal');
