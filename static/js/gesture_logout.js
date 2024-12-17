@@ -2,28 +2,82 @@ const videoElement = document.createElement('video');
 const canvasElement = document.createElement('canvas');
 const canvasCtx = canvasElement.getContext('2d');
 
-let isRightWinkDetected = false;
-let palmHoldStartTime = 0;
-const gestureTimeout = 1500; // 1.5 seconds to hold palm
-const palmThreshold = 0.2; // Threshold for detecting open palm
+let previousWristX = null;
+let waveCount = 0;
+let lastWaveTime = 0;
+let waveDirection = null;
+let lastWaveDirection = null;
+const waveThreshold = 0.03; // Made even more sensitive
 
 function setupGestureLogout() {
-    // Style and add video/canvas elements
+    // Create a wrapper div for both camera and canvas
+    const gestureWrapper = document.createElement('div');
+    gestureWrapper.style.display = 'flex';
+    gestureWrapper.style.gap = '10px';
+    gestureWrapper.style.position = 'fixed';
+    gestureWrapper.style.top = '20px';
+    gestureWrapper.style.right = '20px';
+    gestureWrapper.style.zIndex = '1000';
+
+    // Camera container
+    const cameraContainer = document.createElement('div');
+    cameraContainer.id = 'camera-container';
+    cameraContainer.style.width = '160px';
+    cameraContainer.style.height = '140px';
+    cameraContainer.style.background = 'rgba(0, 0, 0, 0.5)';
+    cameraContainer.style.borderRadius = '8px';
+    cameraContainer.style.padding = '10px';
+
+    // Canvas container
+    const canvasContainer = document.createElement('div');
+    canvasContainer.id = 'canvas-container';
+    canvasContainer.style.width = '160px';
+    canvasContainer.style.height = '140px';
+    canvasContainer.style.background = 'rgba(0, 0, 0, 0.5)';
+    canvasContainer.style.borderRadius = '8px';
+    canvasContainer.style.padding = '10px';
+
+    // Style video and canvas
     videoElement.setAttribute('class', 'gesture-video');
     canvasElement.setAttribute('class', 'gesture-canvas');
     
-    const gestureContainer = document.createElement('div');
-    gestureContainer.id = 'gesture-container';
-    gestureContainer.style.position = 'fixed';
-    gestureContainer.style.bottom = '20px';
-    gestureContainer.style.right = '20px';
-    gestureContainer.style.width = '160px';
-    gestureContainer.style.height = '120px';
-    gestureContainer.style.zIndex = '1000';
+    // Add labels
+    const cameraLabel = document.createElement('div');
+    cameraLabel.textContent = 'Wave Hand to Logout';
+    cameraLabel.style.color = '#fff';
+    cameraLabel.style.textAlign = 'center';
+    cameraLabel.style.marginBottom = '5px';
+
+    const canvasLabel = document.createElement('div');
+    canvasLabel.textContent = 'Hand Detection';
+    canvasLabel.style.color = '#fff';
+    canvasLabel.style.textAlign = 'center';
+    canvasLabel.style.marginBottom = '5px';
+
+    // Assemble the components
+    cameraContainer.appendChild(cameraLabel);
+    cameraContainer.appendChild(videoElement);
     
-    gestureContainer.appendChild(videoElement);
-    gestureContainer.appendChild(canvasElement);
-    document.body.appendChild(gestureContainer);
+    canvasContainer.appendChild(canvasLabel);
+    canvasContainer.appendChild(canvasElement);
+    
+    gestureWrapper.appendChild(cameraContainer);
+    gestureWrapper.appendChild(canvasContainer);
+    document.body.appendChild(gestureWrapper);
+
+    // Debug popup div
+    const debugPopup = document.createElement('div');
+    debugPopup.id = 'debug-popup';
+    debugPopup.style.position = 'fixed';
+    debugPopup.style.bottom = '20px';
+    debugPopup.style.right = '20px';
+    debugPopup.style.background = 'rgba(0, 0, 0, 0.8)';
+    debugPopup.style.color = '#fff';
+    debugPopup.style.padding = '10px';
+    debugPopup.style.borderRadius = '5px';
+    debugPopup.style.zIndex = '1001';
+    debugPopup.style.display = 'none';
+    document.body.appendChild(debugPopup);
 
     // Initialize MediaPipe Holistic
     const holistic = new Holistic({
@@ -52,136 +106,121 @@ function setupGestureLogout() {
     camera.start();
 }
 
+// Debug function
+function showDebug(message) {
+    const debugPopup = document.getElementById('debug-popup');
+    debugPopup.textContent = message;
+    debugPopup.style.display = 'block';
+    setTimeout(() => {
+        debugPopup.style.display = 'none';
+    }, 3000);
+}
+
+// Update the onResults function to use debug popup
 function onResults(results) {
     canvasCtx.save();
     canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
-    // Check for right wink
-    if (results.faceLandmarks) {
-        const rightEyeUpper = results.faceLandmarks[159];
-        const rightEyeLower = results.faceLandmarks[145];
-        const eyeDistance = Math.abs(rightEyeUpper.y - rightEyeLower.y);
-        
-        if (eyeDistance < 0.02) {
-            isRightWinkDetected = true;
-            setTimeout(() => { isRightWinkDetected = false; }, gestureTimeout);
-        }
-    }
-
-    // Check for open palm and hold
     if (results.rightHandLandmarks) {
         const landmarks = results.rightHandLandmarks;
-        
-        // Calculate distances between fingertips and palm base
-        const palmBase = landmarks[0];
-        const thumbTip = landmarks[4];
-        const indexTip = landmarks[8];
-        const middleTip = landmarks[12];
-        const ringTip = landmarks[16];
-        const pinkyTip = landmarks[20];
-        
-        // Check if fingers are spread (open palm)
-        const isOpenPalm = checkOpenPalm(palmBase, thumbTip, indexTip, middleTip, ringTip, pinkyTip);
+        const wrist = landmarks[0];
 
-        if (isOpenPalm) {
-            if (palmHoldStartTime === 0) {
-                palmHoldStartTime = Date.now();
-            } else if (Date.now() - palmHoldStartTime >= gestureTimeout && isRightWinkDetected) {
-                handleLogoutGesture();
-                palmHoldStartTime = 0;
-                isRightWinkDetected = false;
-            }
-        } else {
-            palmHoldStartTime = 0;
-        }
-
-        // Visual feedback for palm detection
-        if (palmHoldStartTime > 0) {
-            const holdProgress = Math.min((Date.now() - palmHoldStartTime) / gestureTimeout, 1);
-            drawPalmFeedback(holdProgress);
-        }
-    } else {
-        palmHoldStartTime = 0;
-    }
-
-    // Draw landmarks for visual feedback
-    drawConnectors(canvasCtx, results.faceLandmarks, FACEMESH_TESSELATION,
-        {color: '#C0C0C070', lineWidth: 1});
-    if (results.rightHandLandmarks) {
+        // Draw hand landmarks
         drawConnectors(canvasCtx, results.rightHandLandmarks, HAND_CONNECTIONS,
             {color: '#00FF00', lineWidth: 2});
+
+        // Check for waving motion
+        if (previousWristX !== null) {
+            const waveMovement = wrist.x - previousWristX;
+            const currentTime = Date.now();
+            
+            // Determine wave direction
+            if (Math.abs(waveMovement) > waveThreshold) {
+                const currentDirection = waveMovement > 0 ? 'right' : 'left';
+                
+                // Detect direction change
+                if (lastWaveDirection && currentDirection !== lastWaveDirection) {
+                    if (currentTime - lastWaveTime > 100) {
+                        waveCount++;
+                        lastWaveTime = currentTime;
+                        showDebug(`Wave ${waveCount} detected! Wave ${3-waveCount} more times to logout`);
+                    }
+                }
+                lastWaveDirection = currentDirection;
+            }
+
+            // Draw wave progress
+            drawWaveProgress(waveCount);
+            
+            // Check if enough waves detected
+            if (waveCount >= 3) {
+                showDebug('Wave gesture complete! Logging out...');
+                handleLogoutGesture();
+                waveCount = 0; // Reset count
+            }
+        }
+        
+        previousWristX = wrist.x;
+        
+    } else {
+        // Reset detection if hand is lost
+        previousWristX = null;
+        lastWaveDirection = null;
+        if (Date.now() - lastWaveTime > 1500) {
+            if (waveCount > 0) {
+                showDebug('Wave count reset');
+            }
+            waveCount = 0;
+        }
     }
     
     canvasCtx.restore();
 }
 
-function checkOpenPalm(palmBase, thumbTip, indexTip, middleTip, ringTip, pinkyTip) {
-    // Calculate average finger spread
-    const fingerTips = [thumbTip, indexTip, middleTip, ringTip, pinkyTip];
-    let totalSpread = 0;
+function drawWaveProgress(count) {
+    const centerX = canvasElement.width / 2;
+    const centerY = 30;
     
-    for (let i = 0; i < fingerTips.length - 1; i++) {
-        const spread = Math.sqrt(
-            Math.pow(fingerTips[i].x - fingerTips[i + 1].x, 2) +
-            Math.pow(fingerTips[i].y - fingerTips[i + 1].y, 2)
-        );
-        totalSpread += spread;
+    // Draw background circles
+    for (let i = 0; i < 3; i++) {
+        canvasCtx.beginPath();
+        canvasCtx.strokeStyle = i < count ? '#00FF00' : '#ffffff50';
+        canvasCtx.lineWidth = 4;
+        canvasCtx.arc(centerX + (i - 1) * 25, centerY, 8, 0, Math.PI * 2);
+        canvasCtx.stroke();
     }
     
-    const avgSpread = totalSpread / 4;
-    
-    // Check if fingers are raised (y position lower than palm base)
-    const fingersRaised = fingerTips.every(tip => tip.y < palmBase.y);
-    
-    return avgSpread > palmThreshold && fingersRaised;
+    // Add text
+    canvasCtx.fillStyle = '#ffffff';
+    canvasCtx.font = '14px Arial';
+    canvasCtx.textAlign = 'center';
+    canvasCtx.fillText(`Wave: ${count}/3`, centerX, centerY + 25);
 }
 
-function drawPalmFeedback(progress) {
-    const centerX = canvasElement.width / 2;
-    const centerY = canvasElement.height - 30;
-    
-    canvasCtx.beginPath();
-    canvasCtx.strokeStyle = '#00FF00';
-    canvasCtx.lineWidth = 3;
-    canvasCtx.arc(centerX, centerY, 15, 0, Math.PI * 2 * progress);
-    canvasCtx.stroke();
-}
-
+// Update handleLogoutGesture to use debug popup
 function handleLogoutGesture() {
-    // Reset gesture flags
-    isRightWinkDetected = false;
-    palmHoldStartTime = 0;
-
-    // Show confirmation modal
-    const modal = document.getElementById('logout-confirm-modal');
-    modal.classList.remove('hidden');
+    showDebug('Attempting logout...');
     
-    let logoutTimer;
-
-    // Allow cancellation
-    const cancelButton = document.getElementById('cancel-logout');
-    const modalContent = modal.querySelector('.relative');
-
-    // Handle modal backdrop click
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            clearTimeout(logoutTimer);
-            modal.classList.add('hidden');
+    // Force logout with a small delay
+    setTimeout(() => {
+        showDebug('Redirecting to logout URL...');
+        console.log('Redirecting to /logout/');
+        try {
+            window.location.href = '/logout/';
+        } catch (error) {
+            console.error('Logout error:', error);
+            showDebug('Error during logout: ' + error.message);
         }
-    });
+    }, 1000);
+}
 
-    // Handle cancel button click
-    cancelButton.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        clearTimeout(logoutTimer);
-        modal.classList.add('hidden');
-    });
-
-    // Auto logout after 3 seconds if not canceled
-    logoutTimer = setTimeout(() => {
-        // Use the dashboard URL as fallback if logoutUrl is not properly set
-        const dashboardUrl = '/';
-        window.location.href = logoutUrl || dashboardUrl;
-    }, 3000);
-} 
+// Add CSS
+const style = document.createElement('style');
+style.textContent = `
+    .gesture-video, .gesture-canvas {
+        width: 100%;
+        height: 120px;
+        border-radius: 4px;
+    }
+`;
+document.head.appendChild(style); 

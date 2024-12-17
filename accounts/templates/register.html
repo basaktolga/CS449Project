@@ -11,11 +11,13 @@
     <h2 class="text-2xl font-bold mb-5 text-center text-gray-900 dark:text-white">Register</h2>
 
     {% if messages %}
-        {% for message in messages %}
-            <div class="mb-4 p-4 {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %} rounded-lg">
-                <p class="text-sm">{{ message }}</p>
-            </div>
-        {% endfor %}
+        <div class="mb-4">
+            {% for message in messages %}
+                <div class="p-4 mb-2 {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %} rounded-lg">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
     {% endif %}
 
     <div class="flex gap-8">
@@ -29,7 +31,41 @@
                     <label for="username" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Username
                     </label>
-                    <input type="text" id="username" name="username" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
+                    <input type="text" id="username" name="username" 
+                           autocomplete="username"
+                           value="{{ form.username.value|default:'' }}"
+                           class="bg-gray-50 border {% if form.username.errors %}border-red-500{% else %}border-gray-300{% endif %} text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
+                    {% if form.username.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.username.errors|join:", " }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- First Name Field -->
+                <div class="mb-6">
+                    <label for="first_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        First Name
+                    </label>
+                    <input type="text" id="first_name" name="first_name" 
+                           autocomplete="given-name"
+                           value="{{ form.first_name.value|default:'' }}"
+                           class="bg-gray-50 border {% if form.first_name.errors %}border-red-500{% else %}border-gray-300{% endif %} text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
+                    {% if form.first_name.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.first_name.errors|join:", " }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Last Name Field -->
+                <div class="mb-6">
+                    <label for="last_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Last Name
+                    </label>
+                    <input type="text" id="last_name" name="last_name" 
+                           autocomplete="family-name"
+                           value="{{ form.last_name.value|default:'' }}"
+                           class="bg-gray-50 border {% if form.last_name.errors %}border-red-500{% else %}border-gray-300{% endif %} text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
+                    {% if form.last_name.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.last_name.errors|join:", " }}</p>
+                    {% endif %}
                 </div>
 
                 <!-- Email Field -->
@@ -37,7 +73,13 @@
                     <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Email
                     </label>
-                    <input type="email" id="email" name="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
+                    <input type="email" id="email" name="email" 
+                           autocomplete="email"
+                           value="{{ form.email.value|default:'' }}"
+                           class="bg-gray-50 border {% if form.email.errors %}border-red-500{% else %}border-gray-300{% endif %} text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
+                    {% if form.email.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.email.errors|join:", " }}</p>
+                    {% endif %}
                 </div>
 
                 <!-- Password Field -->
@@ -45,7 +87,12 @@
                     <label for="password1" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Password
                     </label>
-                    <input type="password" id="password1" name="password1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
+                    <input type="password" id="password1" name="password1" 
+                           autocomplete="new-password"
+                           class="bg-gray-50 border {% if form.password1.errors %}border-red-500{% else %}border-gray-300{% endif %} text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
+                    {% if form.password1.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.password1.errors|join:", " }}</p>
+                    {% endif %}
                 </div>
 
                 <!-- Confirm Password Field -->
@@ -53,7 +100,12 @@
                     <label for="password2" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Confirm Password
                     </label>
-                    <input type="password" id="password2" name="password2" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
+                    <input type="password" id="password2" name="password2" 
+                           autocomplete="new-password"
+                           class="bg-gray-50 border {% if form.password2.errors %}border-red-500{% else %}border-gray-300{% endif %} text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
+                    {% if form.password2.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.password2.errors|join:", " }}</p>
+                    {% endif %}
                 </div>
 
                 <input type="hidden" id="captcha-solved" name="captcha-solved" value="false">
@@ -90,11 +142,20 @@ document.addEventListener('DOMContentLoaded', setupFaceCaptcha);
 
 function validateForm(event) {
     if (document.getElementById('captcha-solved').value !== 'true') {
+        event.preventDefault();
         alert('Please complete the smile CAPTCHA');
         return false;
     }
     return true;
 }
+
+// Add this to debug CAPTCHA state
+function checkCaptchaState() {
+    console.log('CAPTCHA state:', document.getElementById('captcha-solved').value);
+}
+
+// Check CAPTCHA state every few seconds
+setInterval(checkCaptchaState, 2000);
 </script>
 
 <!-- Fluid Canvas Script -->
@@ -113,21 +174,69 @@ function validateForm(event) {
     .relative.z-10 {
         z-index: 10;
         position: relative;
+        margin-top: 1rem;
+        overflow-y: visible;
     }
 
     body {
-        overflow: hidden;
+        overflow-y: auto;
+        min-height: 100vh;
+        padding-bottom: 2rem;
     }
 
-    /* New styles for video and canvas */
+    /* Make video and canvas smaller */
     .input_video, .output_canvas {
-        width: 320px;
-        height: 240px;
-        margin-bottom: 10px;
+        width: 280px;
+        height: 210px;
+        margin-bottom: 8px;
     }
 
     #face-captcha-container {
-        width: 320px;
+        width: 280px;
+        margin-right: 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* Make the form more compact */
+    .flex.gap-8 {
+        gap: 2.5rem;
+        justify-content: space-between;
+    }
+
+    /* Reduce padding */
+    .p-8 {
+        padding: 1.25rem;
+    }
+
+    /* Make form fields more compact */
+    .mb-6 {
+        margin-bottom: 1rem;
+    }
+
+    /* Adjust input padding */
+    input.p-2.5 {
+        padding: 0.5rem 0.75rem;
+    }
+
+    /* Make text slightly smaller */
+    .text-2xl {
+        font-size: 1.5rem;
+    }
+
+    .text-sm {
+        font-size: 0.875rem;
+    }
+
+    /* Make the form column slightly narrower */
+    .flex-1 {
+        flex: 0.6;
+    }
+
+    /* Optional: if you want to adjust the form width */
+    form {
+        max-width: 400px;
     }
 </style>
 {% endblock %}

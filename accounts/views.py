@@ -52,9 +52,14 @@ def register(request):
             )
             
             return redirect("education:user_dashboard")
-            
         else:
-            messages.error(request, "Please correct the errors below.")
+            # Print form errors to console for debugging
+            print("Form errors:", form.errors)
+            # Add specific error messages
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
+            return render(request, "register.html", {"form": form})
     else:
         form = CustomUserCreationForm()
     return render(request, "register.html", {"form": form})
